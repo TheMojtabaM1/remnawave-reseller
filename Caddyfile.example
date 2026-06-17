@@ -1,0 +1,30 @@
+# USVSIR — Caddy vhost example (automatic HTTPS).
+# Replace agent.example.com with your domain and adjust the PHP-FPM socket
+# if your distro differs. The installer writes this automatically.
+
+agent.example.com {
+    root * /opt/usvsir/public
+    encode gzip
+
+    # PHP-FPM (Debian/Ubuntu default socket path; version may vary)
+    php_fastcgi unix//run/php/php8.3-fpm.sock
+
+    file_server
+
+    # Deny access to dotfiles and sensitive paths
+    @forbidden {
+        path /.env* /storage/* /src/* /database/* /migrations/* /cron/* /vendor/* /backups/*
+    }
+    respond @forbidden 404
+
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy no-referrer
+        -Server
+    }
+
+    log {
+        output file /var/log/caddy/usvsir.log
+    }
+}

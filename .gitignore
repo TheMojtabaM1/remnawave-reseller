@@ -1,0 +1,21 @@
+# Secrets & local config
+.env
+
+# Dependencies
+/vendor/
+
+# Runtime / generated
+/storage/logs/*
+!/storage/logs/.gitkeep
+/storage/statements/*
+!/storage/statements/.gitkeep
+/backups/*
+!/backups/.gitkeep
+/public/build/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
