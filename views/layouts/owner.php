@@ -3,6 +3,7 @@ use App\Core\Auth;
 use App\Services\AlertService;
 $appName = config_value('app_name', 'Panel');
 $unread  = AlertService::unreadCount();
+$openTickets = \App\Controllers\Owner\TicketController::openCount();
 $cur     = $_SERVER['REQUEST_URI'] ?? '';
 $nav = [
     '/owner'             => ['داشبورد', 'M3 12l9-9 9 9M5 10v10h14V10'],
@@ -16,6 +17,7 @@ $nav = [
     '/owner/monitor'     => ['کاربران آنلاین', 'M12 12a4 4 0 100-8 4 4 0 000 8zM6 20a6 6 0 0112 0'],
     '/owner/nodes'       => ['سلامت نودها', 'M5 12a7 7 0 0114 0M8.5 12a3.5 3.5 0 017 0M12 12h.01'],
     '/owner/alerts'      => ['هشدارها', 'M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0'],
+    '/owner/tickets'     => ['تیکت‌ها', 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'],
     '/owner/statements'  => ['صورتحساب‌ها', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z'],
     '/owner/audit'       => ['لاگ فعالیت‌ها', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2'],
     '/owner/backups'     => ['پشتیبان‌گیری', 'M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2'],
@@ -31,10 +33,10 @@ function icon($d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentC
 <title><?= e($title ?? 'مدیریت') ?> — <?= e($appName) ?></title>
 <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/Arad-Regular.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/Arad-SemiBold.woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/tw.css">
-<link rel="stylesheet" href="/assets/css/app.css">
+<link rel="stylesheet" href="<?= asset('/assets/css/tw.css') ?>">
+<link rel="stylesheet" href="<?= asset('/assets/css/app.css') ?>">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="/assets/js/app.js"></script>
+<script src="<?= asset('/assets/js/app.js') ?>"></script>
 </head>
 <body class="text-stone-100 min-h-screen">
 <div class="flex min-h-screen">
@@ -53,6 +55,7 @@ function icon($d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentC
         <a href="<?= $href ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition <?= $active ? 'nav-active' : 'text-stone-300 hover:bg-white/5 hover:text-white' ?>">
           <?= icon($d) ?><span class="flex-1"><?= e($label) ?></span>
           <?php if ($href === '/owner/alerts' && $unread > 0): ?><span class="bg-brand text-white text-[11px] rounded-full px-2 py-0.5"><?= $unread ?></span><?php endif; ?>
+          <?php if ($href === '/owner/tickets' && $openTickets > 0): ?><span class="bg-brand text-white text-[11px] rounded-full px-2 py-0.5"><?= $openTickets ?></span><?php endif; ?>
         </a>
       <?php endforeach; ?>
     </nav>
@@ -79,6 +82,5 @@ function icon($d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentC
     </main>
   </div>
 </div>
-<?= \App\Core\View::partial('partials/assistant') ?>
 </body>
 </html>

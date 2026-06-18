@@ -45,11 +45,13 @@ foreach ($files as $file) {
     echo "Applying {$name} ... ";
     $sql = (string) file_get_contents($file);
 
-    // Split on ";" that terminate a statement (end of line / file).
+    // Strip full-line SQL comments first, so a leading comment never causes a
+    // real statement to be skipped, then split on statement-terminating ";".
+    $sql = preg_replace('/^\s*--.*$/m', '', $sql) ?? $sql;
     $statements = preg_split('/;\s*(\n|$)/', $sql) ?: [];
     foreach ($statements as $stmt) {
         $stmt = trim($stmt);
-        if ($stmt === '' || str_starts_with($stmt, '--')) {
+        if ($stmt === '') {
             continue;
         }
         $pdo->exec($stmt);

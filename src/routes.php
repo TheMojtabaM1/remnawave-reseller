@@ -38,8 +38,6 @@ $router->get('/login', [App\Controllers\Auth\LoginController::class, 'show']);
 $router->post('/login', [App\Controllers\Auth\LoginController::class, 'submit'], [$csrf]);
 $router->post('/logout', [App\Controllers\Auth\LogoutController::class, 'logout'], [$csrf]);
 
-// AI assistant (#118) — any authenticated user
-$router->post('/assistant', [App\Controllers\AssistantController::class, 'chat'], [$csrf]);
 
 // ════════════════════════════════════════════════════════════════════
 //  OWNER (super-admin)
@@ -109,6 +107,12 @@ $router->post('/owner/backups/create', [$O . 'BackupController', 'create'], [$ow
 $router->get('/owner/backups/download', [$O . 'BackupController', 'download'], [$owner]);
 $router->post('/owner/backups/restore', [$O . 'BackupController', 'restore'], [$owner, $csrf]);
 
+// Tickets (support)
+$router->get('/owner/tickets', [$O . 'TicketController', 'index'], [$owner]);
+$router->get('/owner/tickets/{id}', [$O . 'TicketController', 'show'], [$owner]);
+$router->post('/owner/tickets/{id}/reply', [$O . 'TicketController', 'reply'], [$owner, $csrf]);
+$router->post('/owner/tickets/{id}/close', [$O . 'TicketController', 'close'], [$owner, $csrf]);
+
 // Settings
 $router->get('/owner/settings', [$O . 'SettingsController', 'index'], [$owner]);
 $router->post('/owner/settings', [$O . 'SettingsController', 'update'], [$owner, $csrf]);
@@ -136,6 +140,13 @@ $router->post('/panel/configs/bulk', [$R . 'ConfigController', 'bulk'], [$rsl, $
 
 // Reports (reseller's own analytics)
 $router->get('/panel/reports', [$R . 'ReportController', 'index'], [$rsl]);
+
+// Tickets (support)
+$router->get('/panel/tickets', [$R . 'TicketController', 'index'], [$rsl]);
+$router->get('/panel/tickets/create', [$R . 'TicketController', 'create'], [$rsl]);
+$router->post('/panel/tickets', [$R . 'TicketController', 'store'], [$rsl, $csrf]);
+$router->get('/panel/tickets/{id}', [$R . 'TicketController', 'show'], [$rsl]);
+$router->post('/panel/tickets/{id}/reply', [$R . 'TicketController', 'reply'], [$rsl, $csrf]);
 
 // Wallet
 $router->get('/panel/wallet', [$R . 'WalletController', 'index'], [$rsl]);

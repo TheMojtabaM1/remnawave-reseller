@@ -7,6 +7,7 @@ $nav = [
     '/panel/configs' => ['کانفیگ‌ها', 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.7 5.7l-2.5 2.5H9v2H7v2H3v-4l6.3-6.3A6 6 0 1121 9z'],
     '/panel/configs/create' => ['ساخت کانفیگ', 'M12 5v14M5 12h14'],
     '/panel/reports' => ['گزارش‌ها', 'M3 3v18h18M7 14l4-4 3 3 5-6'],
+    '/panel/tickets' => ['تیکت‌ها', 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'],
     '/panel/wallet'  => ['کیف پول', 'M2 7h20v12a2 2 0 01-2 2H4a2 2 0 01-2-2V7zm0 0l3-4h12l3 4M16 13h2'],
 ];
 function icon($d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 shrink-0"><path d="'.$d.'"/></svg>'; }
@@ -21,10 +22,10 @@ $bal = $rsl ? (int)$rsl['balance'] : 0;
 <title><?= e($title ?? 'پنل نماینده') ?> — <?= e($appName) ?></title>
 <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/Arad-Regular.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/Arad-SemiBold.woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/tw.css">
-<link rel="stylesheet" href="/assets/css/app.css">
+<link rel="stylesheet" href="<?= asset('/assets/css/tw.css') ?>">
+<link rel="stylesheet" href="<?= asset('/assets/css/app.css') ?>">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="/assets/js/app.js"></script>
+<script src="<?= asset('/assets/js/app.js') ?>"></script>
 </head>
 <body class="text-stone-100 min-h-screen">
 <div class="flex min-h-screen">
@@ -71,6 +72,5 @@ $bal = $rsl ? (int)$rsl['balance'] : 0;
     </main>
   </div>
 </div>
-<?= \App\Core\View::partial('partials/assistant') ?>
 </body>
 </html>

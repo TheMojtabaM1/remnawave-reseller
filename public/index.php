@@ -24,7 +24,7 @@ if (PHP_SAPI === 'cli-server') {
             'gif' => 'image/gif', 'ico' => 'image/x-icon', 'webp' => 'image/webp',
         ];
         header('Content-Type: ' . ($mimes[$ext] ?? 'application/octet-stream'));
-        header('Cache-Control: public, max-age=31536000');
+        header('Cache-Control: public, max-age=31536000, immutable');
         readfile($file);
         exit;
     }

@@ -189,6 +189,17 @@ if (!function_exists('config_value')) {
     }
 }
 
+if (!function_exists('asset')) {
+    /** Versioned asset URL (cache-busts whenever the file changes). */
+    function asset(string $path): string
+    {
+        $root = defined('APP_ROOT') ? APP_ROOT : dirname(__DIR__, 2);
+        $full = $root . '/public' . $path;
+        $v = is_file($full) ? filemtime($full) : '1';
+        return $path . '?v=' . $v;
+    }
+}
+
 if (!function_exists('url')) {
     function url(string $path = ''): string
     {

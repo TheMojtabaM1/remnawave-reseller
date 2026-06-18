@@ -5,8 +5,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ورود — <?= e($appName) ?></title>
-<link rel="stylesheet" href="/assets/css/tw.css">
-<link rel="stylesheet" href="/assets/css/app.css">
+<link rel="stylesheet" href="<?= asset('/assets/css/tw.css') ?>">
+<link rel="stylesheet" href="<?= asset('/assets/css/app.css') ?>">
 </head>
 <body class="text-stone-100 min-h-screen flex items-center justify-center p-4">
   <div class="w-full max-w-sm fade-up">
