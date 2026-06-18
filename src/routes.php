@@ -130,5 +130,8 @@ $router->get('/panel/configs/{id}/qr', [$R . 'ConfigController', 'qr'], [$rsl]);
 // Reseller bulk on own configs
 $router->post('/panel/configs/bulk', [$R . 'ConfigController', 'bulk'], [$rsl, $csrf]);
 
+// Reports (reseller's own analytics)
+$router->get('/panel/reports', [$R . 'ReportController', 'index'], [$rsl]);
+
 // Wallet
 $router->get('/panel/wallet', [$R . 'WalletController', 'index'], [$rsl]);

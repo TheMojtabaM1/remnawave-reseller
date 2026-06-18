@@ -51,6 +51,8 @@ $defaults = [
     'low_balance_threshold'    => getenv('LOW_BALANCE_THRESHOLD') ?: '50000',
     'default_traffic_strategy' => getenv('DEFAULT_TRAFFIC_STRATEGY') ?: 'NO_RESET',
     'traffic_spike_gb'         => '50',
+    'default_price_per_gb'     => getenv('DEFAULT_PRICE_PER_GB') ?: '0',
+    'default_price_per_day'    => getenv('DEFAULT_PRICE_PER_DAY') ?: '0',
 ];
 foreach ($defaults as $k => $v) {
     Db::exec(

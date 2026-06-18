@@ -10,6 +10,26 @@ use App\Core\Router;
 
 define('APP_ROOT', dirname(__DIR__));
 
+// When running under PHP's built-in server, serve existing static files
+// (assets/fonts/css) directly. Under Caddy/Nginx this block never runs.
+if (PHP_SAPI === 'cli-server') {
+    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+    $file = realpath(__DIR__ . $path);
+    if ($path !== '/' && $file && str_starts_with($file, __DIR__) && is_file($file)) {
+        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        $mimes = [
+            'css' => 'text/css', 'js' => 'application/javascript',
+            'woff2' => 'font/woff2', 'woff' => 'font/woff', 'svg' => 'image/svg+xml',
+            'png' => 'image/png', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif', 'ico' => 'image/x-icon', 'webp' => 'image/webp',
+        ];
+        header('Content-Type: ' . ($mimes[$ext] ?? 'application/octet-stream'));
+        header('Cache-Control: public, max-age=31536000');
+        readfile($file);
+        exit;
+    }
+}
+
 require APP_ROOT . '/vendor/autoload.php';
 
 // ── Load environment ────────────────────────────────────────────────

@@ -17,6 +17,7 @@ final class SettingsController
     private const KEYS = [
         'app_name', 'cleanup_grace_days', 'low_balance_threshold',
         'default_traffic_strategy', 'traffic_spike_gb',
+        'default_price_per_gb', 'default_price_per_day',
     ];
 
     public function index(): void

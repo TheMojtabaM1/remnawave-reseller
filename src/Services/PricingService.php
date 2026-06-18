@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Core\Config;
 use App\Core\Db;
 
 /**
@@ -30,7 +31,9 @@ final class PricingService
     public static function customPrice(int $volumeGb, int $days, array $reseller, ?int $planId = null): int
     {
         $perGb  = self::perGbRate($volumeGb, $reseller, $planId);
-        $perDay = $reseller['price_per_day'] !== null ? (int) $reseller['price_per_day'] : 0;
+        $perDay = $reseller['price_per_day'] !== null
+            ? (int) $reseller['price_per_day']
+            : (int) Config::get('default_price_per_day', 0);
 
         $raw = ($perGb * $volumeGb) + ($perDay * $days);
         return self::applyDiscount($raw, $reseller);
@@ -51,7 +54,8 @@ final class PricingService
             }
         }
         $rate = self::tierRate('global', null, $volumeGb);
-        return $rate ?? 0;
+        // Fall back to the global default per-GB price (owner Settings).
+        return $rate ?? (int) Config::get('default_price_per_gb', 0);
     }
 
     private static function tierRate(string $scope, ?int $planId, int $volumeGb): ?int
