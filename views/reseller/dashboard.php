@@ -1,3 +1,4 @@
+<?php $canRenew = \App\Services\ConfigService::perm($r, 'can_renew'); ?>
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
   <div class="<?= $stats['balance']<0?'bg-rose-600':'bg-emerald-600' ?> rounded-xl p-4"><div class="text-xs text-white/80">موجودی کیف پول</div><div class="text-lg font-bold mt-1"><?= toman($stats['balance']) ?></div></div>
   <div class="bg-brand rounded-xl p-4"><div class="text-xs text-white/80">کانفیگ فعال</div><div class="text-lg font-bold mt-1"><?= number_format($stats['active']) ?></div></div>
@@ -20,7 +21,17 @@
         <?php foreach ($expiring as $c): ?>
           <tr class="border-b border-line">
             <td class="py-2 font-mono text-xs"><a href="/panel/configs/<?= $c['id'] ?>" class="text-brand"><?= e($c['remnawave_username']) ?></a></td>
-            <td class="py-2 text-xs text-amber-400"><?= jdate($c['expires_at'],'date') ?></td>
+            <td class="py-2 text-xs text-amber-400"><?= shamsi($c['expires_at'],'date') ?></td>
+            <td class="py-2 text-left">
+              <?php if ($canRenew): ?>
+              <form method="post" action="/panel/configs/<?= $c['id'] ?>/renew" onsubmit="return confirm('تمدید <?= (int)$c['duration_days'] ?> روزه این کانفیگ؟')">
+                <?= csrf_field() ?>
+                <input type="hidden" name="add_days" value="<?= (int)$c['duration_days'] ?>">
+                <input type="hidden" name="add_gb" value="0">
+                <button class="btn-brand px-3 py-1 rounded-lg text-xs whitespace-nowrap">⚡ تمدید سریع</button>
+              </form>
+              <?php endif; ?>
+            </td>
           </tr>
         <?php endforeach; ?>
         </tbody>

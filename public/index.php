@@ -54,6 +54,22 @@ set_exception_handler(function (\Throwable $e) use ($debug) {
     Response::abort(500, 'خطای غیرمنتظره‌ای رخ داد. لطفاً بعداً تلاش کنید.');
 });
 
+// ── Security headers (sent on every HTML response) ──────────────────
+header('X-Frame-Options: DENY');
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: no-referrer');
+header('Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()');
+header('Cross-Origin-Opener-Policy: same-origin');
+header(
+    "Content-Security-Policy: default-src 'self'; "
+    . "img-src 'self' data:; "
+    . "style-src 'self' 'unsafe-inline'; "
+    . "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+    . "font-src 'self'; connect-src 'self'; "
+    . "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+);
+header_remove('X-Powered-By');
+
 // ── Session ─────────────────────────────────────────────────────────
 Auth::bootSession();
 

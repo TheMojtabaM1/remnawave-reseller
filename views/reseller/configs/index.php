@@ -41,7 +41,7 @@
             <div class="text-xs"><?= human_bytes((int)$c['last_used_bytes']) ?> (<?= $usedPct ?>٪)</div>
             <div class="h-1 bg-white/10 rounded mt-1"><div class="h-1 bg-emerald-500 rounded" style="width:<?= $usedPct ?>%"></div></div>
           </td>
-          <td class="p-2 text-xs"><?= jdate($c['expires_at'],'date') ?></td>
+          <td class="p-2 text-xs"><?= shamsi($c['expires_at'],'date') ?></td>
           <td class="p-2 text-xs"><?= toman((int)$c['price_charged']) ?></td>
           <td class="p-2"><?php
             $badge = ['active'=>'bg-emerald-600/20 text-emerald-400','disabled'=>'bg-white/10 text-stone-300','expired'=>'bg-rose-600/20 text-rose-400'][$c['status']] ?? 'bg-white/10';

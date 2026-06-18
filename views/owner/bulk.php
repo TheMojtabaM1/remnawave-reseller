@@ -48,7 +48,7 @@
               <td class="p-2 font-mono text-xs"><?= e($c['remnawave_username']) ?></td>
               <td class="p-2 text-xs"><?= e($c['reseller_username']) ?></td>
               <td class="p-2"><?= (int)$c['volume_gb'] ?>گیگ</td>
-              <td class="p-2 text-xs"><?= jdate($c['expires_at'],'date') ?></td>
+              <td class="p-2 text-xs"><?= shamsi($c['expires_at'],'date') ?></td>
               <td class="p-2 text-xs"><?= e($c['status']) ?></td>
             </tr>
           <?php endforeach; ?>

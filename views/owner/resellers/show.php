@@ -75,7 +75,7 @@ $typeLabels = ['topup' => 'شارژ', 'charge' => 'فروش', 'refund' => 'با�
           <td class="p-2 font-mono text-xs"><?= e($c['remnawave_username']) ?></td>
           <td class="p-2"><?= (int)$c['volume_gb'] ?> گیگ</td>
           <td class="p-2"><?= human_bytes((int)$c['last_used_bytes']) ?></td>
-          <td class="p-2 text-xs"><?= jdate($c['expires_at'],'date') ?></td>
+          <td class="p-2 text-xs"><?= shamsi($c['expires_at'],'date') ?></td>
           <td class="p-2"><?= toman((int)$c['price_charged']) ?></td>
           <td class="p-2"><span class="text-xs"><?= e($c['status']) ?></span></td>
         </tr>
@@ -95,7 +95,7 @@ $typeLabels = ['topup' => 'شارژ', 'charge' => 'فروش', 'refund' => 'با�
       <tbody>
       <?php foreach ($txs as $t): ?>
         <tr class="border-t border-line">
-          <td class="p-2 text-xs"><?= jdate($t['created_at']) ?></td>
+          <td class="p-2 text-xs"><?= shamsi($t['created_at']) ?></td>
           <td class="p-2"><?= e($typeLabels[$t['type']] ?? $t['type']) ?></td>
           <td class="p-2 <?= (int)$t['amount']<0?'text-rose-400':'text-emerald-400' ?>"><?= toman((int)$t['amount']) ?></td>
           <td class="p-2"><?= toman((int)$t['balance_after']) ?></td>

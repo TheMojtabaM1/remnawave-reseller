@@ -38,6 +38,9 @@ $router->get('/login', [App\Controllers\Auth\LoginController::class, 'show']);
 $router->post('/login', [App\Controllers\Auth\LoginController::class, 'submit'], [$csrf]);
 $router->post('/logout', [App\Controllers\Auth\LogoutController::class, 'logout'], [$csrf]);
 
+// AI assistant (#118) — any authenticated user
+$router->post('/assistant', [App\Controllers\AssistantController::class, 'chat'], [$csrf]);
+
 // ════════════════════════════════════════════════════════════════════
 //  OWNER (super-admin)
 // ════════════════════════════════════════════════════════════════════
@@ -92,6 +95,7 @@ $router->post('/owner/alerts/{id}/read', [$O . 'AlertController', 'markRead'], [
 $router->post('/owner/alerts/read-all', [$O . 'AlertController', 'markAllRead'], [$owner, $csrf]);
 $router->get('/owner/monitor', [$O . 'MonitorController', 'index'], [$owner]);
 $router->get('/owner/nodes', [$O . 'NodeController', 'index'], [$owner]);
+$router->get('/owner/nodes/live', [$O . 'NodeController', 'live'], [$owner]);
 $router->get('/owner/leaderboard', [$O . 'LeaderboardController', 'index'], [$owner]);
 
 // Statements

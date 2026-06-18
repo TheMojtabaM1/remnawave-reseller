@@ -30,7 +30,7 @@ $cards = [
     <?php else: foreach ($alerts as $a): ?>
       <div class="text-sm border-b border-line py-2">
         <span class="text-amber-400">●</span> <?= e($a['message']) ?>
-        <div class="text-xs text-stone-500"><?= jdate($a['created_at']) ?></div>
+        <div class="text-xs text-stone-500"><?= shamsi($a['created_at']) ?></div>
       </div>
     <?php endforeach; endif; ?>
   </div>
@@ -56,7 +56,7 @@ $cards = [
       <?php foreach ($recent as $a): ?>
         <div class="border-b border-line py-1.5 flex justify-between">
           <span><span class="text-stone-400"><?= e($a['actor_name'] ?? $a['actor_type']) ?></span> — <?= e($a['action']) ?></span>
-          <span class="text-xs text-stone-500"><?= jdate($a['created_at'], 'time') ?></span>
+          <span class="text-xs text-stone-500"><?= shamsi($a['created_at'], 'time') ?></span>
         </div>
       <?php endforeach; ?>
     </div>

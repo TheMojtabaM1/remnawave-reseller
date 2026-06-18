@@ -70,7 +70,7 @@ final class ReportService
         $labels = $data = [];
         for ($i = $days - 1; $i >= 0; $i--) {
             $day = gmdate('Y-m-d', time() - $i * 86400);
-            $labels[] = jdate($day . ' 00:00:00', 'date');
+            $labels[] = shamsi($day . ' 00:00:00', 'date');
             $data[] = $map[$day] ?? 0;
         }
         return ['labels' => $labels, 'data' => $data];

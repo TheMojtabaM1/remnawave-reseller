@@ -32,10 +32,10 @@ $sub = (string) $c['subscription_url'];
         <div class="flex justify-between text-xs mb-1"><span class="text-stone-400">مصرف</span><span><?= human_bytes((int)$c['last_used_bytes']) ?> (<?= $usedPct ?>٪)</span></div>
         <div class="h-2 bg-white/10 rounded"><div class="h-2 bg-emerald-500 rounded" style="width:<?= $usedPct ?>%"></div></div>
       </div>
-      <div class="flex justify-between"><span class="text-stone-400">انقضا</span><span><?= jdate($c['expires_at'],'date') ?></span></div>
+      <div class="flex justify-between"><span class="text-stone-400">انقضا</span><span><?= shamsi($c['expires_at'],'date') ?></span></div>
       <div class="flex justify-between"><span class="text-stone-400">قیمت پرداختی</span><span><?= toman((int)$c['price_charged']) ?></span></div>
       <div class="flex justify-between"><span class="text-stone-400">وضعیت</span><span><?= e($c['status']) ?></span></div>
-      <div class="flex justify-between"><span class="text-stone-400">تاریخ ساخت</span><span class="text-xs"><?= jdate($c['created_at']) ?></span></div>
+      <div class="flex justify-between"><span class="text-stone-400">تاریخ ساخت</span><span class="text-xs"><?= shamsi($c['created_at']) ?></span></div>
     </div>
   </div>
 </div>

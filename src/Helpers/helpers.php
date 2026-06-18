@@ -127,12 +127,12 @@ if (!function_exists('gregorian_to_jalali')) {
     }
 }
 
-if (!function_exists('jdate')) {
+if (!function_exists('shamsi')) {
     /**
      * Convert a UTC datetime string to Asia/Tehran Jalali display.
      * $format: 'datetime' | 'date' | 'time'
      */
-    function jdate(?string $utc, string $format = 'datetime'): string
+    function shamsi(?string $utc, string $format = 'datetime'): string
     {
         if (empty($utc) || $utc === '0000-00-00 00:00:00') {
             return '—';

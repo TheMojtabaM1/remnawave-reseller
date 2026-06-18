@@ -43,7 +43,7 @@ final class ReportController
         $labels = $data = [];
         for ($i = 29; $i >= 0; $i--) {
             $day = gmdate('Y-m-d', time() - $i * 86400);
-            $labels[] = jdate($day . ' 00:00:00', 'date');
+            $labels[] = shamsi($day . ' 00:00:00', 'date');
             $data[] = $map[$day] ?? 0;
         }
 

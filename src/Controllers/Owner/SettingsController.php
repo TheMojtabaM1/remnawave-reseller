@@ -18,6 +18,7 @@ final class SettingsController
         'app_name', 'cleanup_grace_days', 'low_balance_threshold',
         'default_traffic_strategy', 'traffic_spike_gb',
         'default_price_per_gb', 'default_price_per_day',
+        'broadcast_enabled', 'broadcast_message',
     ];
 
     public function index(): void

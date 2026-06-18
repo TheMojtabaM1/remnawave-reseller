@@ -21,14 +21,10 @@ $bal = $rsl ? (int)$rsl['balance'] : 0;
 <title><?= e($title ?? 'پنل نماینده') ?> — <?= e($appName) ?></title>
 <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/Arad-Regular.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/Arad-SemiBold.woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/tw.css">
 <link rel="stylesheet" href="/assets/css/app.css">
-<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="/assets/js/app.js"></script>
-<script>tailwind.config={theme:{extend:{
-  fontFamily:{sans:['Arad','sans-serif']},
-  colors:{brand:{DEFAULT:'#f97316',light:'#fb923c',dark:'#ea580c'},ink:'#0a0a0c',card:'#141210',card2:'#1e1a16',line:'#2a241e',line2:'#3a322a'}
-}}}</script>
 </head>
 <body class="text-stone-100 min-h-screen">
 <div class="flex min-h-screen">
@@ -62,6 +58,11 @@ $bal = $rsl ? (int)$rsl['balance'] : 0;
       </div>
     </header>
     <main class="p-4 md:p-6 flex-1 fade-up">
+      <?php $bc = (string) config_value('broadcast_message', ''); if (config_value('broadcast_enabled', '') === '1' && trim($bc) !== ''): ?>
+        <div class="bg-gradient-to-l from-brand/25 to-amber-500/15 border border-brand/40 px-4 py-3 rounded-xl mb-3 text-sm flex items-start gap-2">
+          <span>📢</span><span class="text-stone-100"><?= e($bc) ?></span>
+        </div>
+      <?php endif; ?>
       <?php foreach (flash() as $f):
         $c = ['success' => 'from-emerald-500/20 border-emerald-500/40 text-emerald-300', 'error' => 'from-rose-500/20 border-rose-500/40 text-rose-300', 'info' => 'from-brand/20 border-brand/40 text-brand-light', 'warning' => 'from-amber-500/20 border-amber-500/40 text-amber-300'][$f['type']] ?? 'from-white/10 border-white/20'; ?>
         <div class="bg-gradient-to-l <?= $c ?> border px-4 py-2.5 rounded-xl mb-3 text-sm"><?= e($f['message']) ?></div>
@@ -70,5 +71,6 @@ $bal = $rsl ? (int)$rsl['balance'] : 0;
     </main>
   </div>
 </div>
+<?= \App\Core\View::partial('partials/assistant') ?>
 </body>
 </html>

@@ -31,14 +31,10 @@ function icon($d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentC
 <title><?= e($title ?? 'مدیریت') ?> — <?= e($appName) ?></title>
 <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/Arad-Regular.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/Arad-SemiBold.woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/tw.css">
 <link rel="stylesheet" href="/assets/css/app.css">
-<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="/assets/js/app.js"></script>
-<script>tailwind.config={theme:{extend:{
-  fontFamily:{sans:['Arad','sans-serif']},
-  colors:{brand:{DEFAULT:'#f97316',light:'#fb923c',dark:'#ea580c'},ink:'#0a0a0c',card:'#141210',card2:'#1e1a16',line:'#2a241e',line2:'#3a322a'}
-}}}</script>
 </head>
 <body class="text-stone-100 min-h-screen">
 <div class="flex min-h-screen">
@@ -83,5 +79,6 @@ function icon($d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentC
     </main>
   </div>
 </div>
+<?= \App\Core\View::partial('partials/assistant') ?>
 </body>
 </html>

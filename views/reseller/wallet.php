@@ -26,7 +26,7 @@
     <tbody>
     <?php foreach ($txs as $t): ?>
       <tr class="border-t border-line">
-        <td class="p-2 text-xs whitespace-nowrap"><?= jdate($t['created_at']) ?></td>
+        <td class="p-2 text-xs whitespace-nowrap"><?= shamsi($t['created_at']) ?></td>
         <td class="p-2"><?= e($typeLabels[$t['type']] ?? $t['type']) ?></td>
         <td class="p-2 <?= (int)$t['amount']<0?'text-rose-400':'text-emerald-400' ?>"><?= toman((int)$t['amount']) ?></td>
         <td class="p-2"><?= toman((int)$t['balance_after']) ?></td>

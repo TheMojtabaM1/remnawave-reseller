@@ -14,7 +14,7 @@ $typeLabels = ['low_balance'=>'موجودی کم','node_down'=>'نود قطع','
         <span class="<?= $sev[$a['severity']] ?? 'bg-white/10' ?> text-white text-xs px-2 py-1 rounded"><?= e($typeLabels[$a['type']] ?? $a['type']) ?></span>
         <div>
           <div class="text-sm"><?= e($a['message']) ?></div>
-          <div class="text-xs text-stone-500"><?= jdate($a['created_at']) ?></div>
+          <div class="text-xs text-stone-500"><?= shamsi($a['created_at']) ?></div>
         </div>
       </div>
       <?php if (!$a['is_read']): ?>

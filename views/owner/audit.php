@@ -20,7 +20,7 @@
     <tbody>
     <?php foreach ($logs as $l): ?>
       <tr class="border-t border-line">
-        <td class="p-2 text-xs whitespace-nowrap"><?= jdate($l['created_at']) ?></td>
+        <td class="p-2 text-xs whitespace-nowrap"><?= shamsi($l['created_at']) ?></td>
         <td class="p-2 text-xs"><?= e($l['actor_type']) ?>#<?= (int)$l['actor_id'] ?></td>
         <td class="p-2"><span class="bg-card2 px-2 py-1 rounded text-xs"><?= e($l['action']) ?></span></td>
         <td class="p-2 text-xs text-stone-400"><?= e($l['target_type']) ?> <?= e($l['target_id']) ?></td>

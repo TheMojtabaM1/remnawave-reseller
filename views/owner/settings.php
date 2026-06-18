@@ -30,6 +30,15 @@
         </div>
       </div>
 
+      <div class="border-t border-line pt-3 mt-2">
+        <div class="text-sm font-semibold text-brand-light mb-2">پیام سراسری به نمایندگان (Broadcast)</div>
+        <label class="pick w-fit mb-2">
+          <input type="hidden" name="broadcast_enabled" value="0">
+          <input type="checkbox" name="broadcast_enabled" value="1" <?= ($settings['broadcast_enabled'] ?? '')==='1'?'checked':'' ?>> نمایش بنر اعلان به همه نمایندگان
+        </label>
+        <textarea name="broadcast_message" rows="2" placeholder="مثلاً: امشب از ساعت ۲ تا ۴ بامداد سرور بروزرسانی می‌شود." class="w-full bg-card2 border border-line2 rounded-lg px-3 py-2 text-sm"><?= e($settings['broadcast_message'] ?? '') ?></textarea>
+      </div>
+
       <button class="btn-brand px-6 py-2 rounded-lg text-sm">ذخیره</button>
     </form>
   </div>

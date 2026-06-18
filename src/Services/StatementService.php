@@ -97,7 +97,7 @@ final class StatementService
         $rows = '';
         $typeLabels = ['topup' => 'شارژ', 'charge' => 'فروش', 'refund' => 'بازگشت وجه', 'manual_adjust' => 'اصلاح دستی', 'gift' => 'هدیه'];
         foreach ($d['txs'] as $t) {
-            $rows .= '<tr><td>' . jdate($t['created_at']) . '</td><td>' . ($typeLabels[$t['type']] ?? e($t['type']))
+            $rows .= '<tr><td>' . shamsi($t['created_at']) . '</td><td>' . ($typeLabels[$t['type']] ?? e($t['type']))
                 . '</td><td>' . toman((int) $t['amount']) . '</td><td>' . toman((int) $t['balance_after'])
                 . '</td><td>' . e($t['description']) . '</td></tr>';
         }
