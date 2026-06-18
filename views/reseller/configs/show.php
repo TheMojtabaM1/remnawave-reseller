@@ -15,7 +15,7 @@ $sub = (string) $c['subscription_url'];
     <?php if ($sub): ?>
       <div class="flex gap-2 items-center mb-3">
         <input id="suburl" value="<?= e($sub) ?>" readonly class="flex-1 bg-card2 border border-line2 rounded-lg px-3 py-2 text-xs font-mono">
-        <button onclick="navigator.clipboard.writeText(document.getElementById('suburl').value);this.textContent='✓'" class="bg-brand hover:bg-brand-light px-3 py-2 rounded-lg text-sm">کپی</button>
+        <button type="button" onclick="copyText(document.getElementById('suburl').value, this)" class="btn-brand px-4 py-2 rounded-lg text-sm whitespace-nowrap">کپی</button>
       </div>
       <div class="flex justify-center bg-white rounded-lg p-3 w-fit"><img src="/panel/configs/<?= $c['id'] ?>/qr" alt="QR" width="180" height="180"></div>
     <?php else: ?>

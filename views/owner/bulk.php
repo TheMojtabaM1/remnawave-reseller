@@ -25,17 +25,18 @@
     <h3 class="font-semibold mb-3">عملیات گروهی روی کانفیگ‌ها</h3>
     <form method="post" action="/owner/bulk/action">
       <?= csrf_field() ?>
-      <div class="flex flex-wrap gap-2 items-center mb-3">
-        <select name="operation" required class="bg-card2 border border-line2 rounded-lg px-3 py-2 text-sm">
+      <div data-selbar class="bulkbar opacity-50 flex flex-wrap gap-2 items-center p-3 mb-3 transition">
+        <label class="pick !py-1.5"><input type="checkbox" onchange="selectAll(this)"> انتخاب همه</label>
+        <span class="text-xs text-stone-400">انتخاب‌شده: <b data-selcount class="text-brand">0</b></span>
+        <select name="operation" required class="inp !w-auto">
           <option value="enable">فعال‌سازی</option>
           <option value="disable">غیرفعال‌سازی</option>
           <option value="regenerate">بازتولید لینک</option>
           <option value="extend">تمدید مدت (بدون هزینه)</option>
           <option value="delete">حذف (با بازگشت وجه حجمی)</option>
         </select>
-        <input type="number" name="extend_days" value="30" title="روز تمدید" class="w-24 bg-card2 border border-line2 rounded-lg px-3 py-2 text-sm">
-        <button onclick="return confirm('اعمال عملیات روی موارد انتخاب‌شده؟')" class="bg-brand hover:bg-brand-light px-4 py-2 rounded-lg text-sm">اعمال</button>
-        <label class="text-xs text-stone-400 mr-auto"><input type="checkbox" onclick="document.querySelectorAll('.cb').forEach(c=>c.checked=this.checked)"> انتخاب همه</label>
+        <input type="number" name="extend_days" value="30" title="روز تمدید" class="inp !w-24">
+        <button onclick="if(!document.querySelector('.cb:checked')){alert('موردی انتخاب نشده');return false;}return confirm('اعمال عملیات روی موارد انتخاب‌شده؟')" class="btn-brand px-5 py-2 rounded-lg text-sm mr-auto">اعمال</button>
       </div>
       <div class="overflow-x-auto max-h-[28rem] overflow-y-auto">
         <table class="w-full text-sm">

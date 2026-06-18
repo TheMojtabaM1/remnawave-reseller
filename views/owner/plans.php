@@ -20,7 +20,7 @@
         <summary class="cursor-pointer text-stone-400">Squadهای پلن</summary>
         <div class="mt-2 space-y-1 max-h-40 overflow-y-auto">
           <?php foreach ($squads as $s): ?>
-            <label class="flex items-center gap-2"><input type="checkbox" name="allowed_squads[]" value="<?= e($s['uuid']) ?>"> <?= e($s['name']) ?></label>
+            <label class="pick"><input type="checkbox" name="allowed_squads[]" value="<?= e($s['uuid']) ?>"> <?= e($s['name']) ?></label>
           <?php endforeach; ?>
           <?php if (!$squads): ?><span class="text-rose-400 text-xs">Squadها دریافت نشد.</span><?php endif; ?>
         </div>

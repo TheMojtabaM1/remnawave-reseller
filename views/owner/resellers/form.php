@@ -102,7 +102,7 @@ function field($label, $name, $value, $type = 'number', $hint = '') {
     <h3 class="font-semibold mb-3">دسترسی‌ها</h3>
     <div class="grid md:grid-cols-3 gap-2">
       <?php foreach ($perms as $p): ?>
-        <label class="flex items-center gap-2 text-sm bg-card2/50 px-3 py-2 rounded-lg">
+        <label class="pick">
           <input type="checkbox" name="perm_<?= $p ?>" value="1" <?= !empty($permVals[$p]) ? 'checked' : '' ?> class="rounded">
           <?= e($permLabels[$p] ?? $p) ?>
         </label>
@@ -117,7 +117,7 @@ function field($label, $name, $value, $type = 'number', $hint = '') {
     <?php else: ?>
       <div class="grid md:grid-cols-3 gap-2">
         <?php foreach ($squads as $s): ?>
-          <label class="flex items-center gap-2 text-sm bg-card2/50 px-3 py-2 rounded-lg">
+          <label class="pick">
             <input type="checkbox" name="allowed_squads[]" value="<?= e($s['uuid']) ?>" <?= in_array($s['uuid'], $squadVals, true) ? 'checked' : '' ?> class="rounded">
             <?= e($s['name']) ?> <span class="text-xs text-stone-500">(<?= (int)$s['members'] ?>)</span>
           </label>

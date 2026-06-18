@@ -18,7 +18,7 @@
       <input name="naming_pattern" placeholder="الگوی نام‌گذاری (اختیاری)" class="w-full bg-card2 border border-line2 rounded-lg px-3 py-2 text-sm">
       <details class="text-sm"><summary class="cursor-pointer text-stone-400">Squadها</summary>
         <div class="mt-2 space-y-1 max-h-40 overflow-y-auto">
-          <?php foreach ($squads as $s): ?><label class="flex items-center gap-2"><input type="checkbox" name="squads[]" value="<?= e($s['uuid']) ?>"> <?= e($s['name']) ?></label><?php endforeach; ?>
+          <?php foreach ($squads as $s): ?><label class="pick"><input type="checkbox" name="squads[]" value="<?= e($s['uuid']) ?>"> <?= e($s['name']) ?></label><?php endforeach; ?>
         </div>
       </details>
       <button class="w-full btn-brand py-2 rounded-lg text-sm">ایجاد قالب</button>

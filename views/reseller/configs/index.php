@@ -16,14 +16,15 @@
 
 <form method="post" action="/panel/configs/bulk">
   <?= csrf_field() ?>
-  <div class="flex flex-wrap gap-2 items-center mb-3">
-    <select name="operation" class="bg-card2 border border-line2 rounded-lg px-3 py-2 text-sm">
+  <div data-selbar class="bulkbar opacity-50 flex flex-wrap gap-2 items-center p-3 mb-3 transition">
+    <label class="pick !py-1.5"><input type="checkbox" onchange="selectAll(this)"> انتخاب همه</label>
+    <span class="text-xs text-stone-400">انتخاب‌شده: <b data-selcount class="text-brand">0</b></span>
+    <select name="operation" class="inp !w-auto mr-auto">
       <?php if ($perm('can_edit_config')): ?><option value="enable">فعال‌سازی</option><option value="disable">غیرفعال‌سازی</option><?php endif; ?>
       <?php if ($perm('can_regenerate_subscription')): ?><option value="regenerate">بازتولید لینک</option><?php endif; ?>
       <?php if ($perm('can_delete_config')): ?><option value="delete">حذف (با بازگشت وجه)</option><?php endif; ?>
     </select>
-    <button onclick="return confirm('اعمال روی موارد انتخاب‌شده؟')" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm">اعمال گروهی</button>
-    <label class="text-xs text-stone-400"><input type="checkbox" onclick="document.querySelectorAll('.cb').forEach(c=>c.checked=this.checked)"> انتخاب همه</label>
+    <button onclick="if(!document.querySelector('.cb:checked')){alert('موردی انتخاب نشده');return false;}return confirm('اعمال روی موارد انتخاب‌شده؟')" class="btn-brand px-5 py-2 rounded-lg text-sm">اعمال گروهی</button>
   </div>
 
   <div class="bg-card border border-line rounded-xl overflow-x-auto">

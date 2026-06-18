@@ -26,7 +26,7 @@ if ((int)$r['max_days'] > 0) $limits[] = 'مدت: '.$r['min_days'].'–'.$r['max
       <?php if (!$plans): ?><p class="text-sm text-rose-400">پلنی فعال نیست.</p><?php endif; ?>
       <div class="space-y-2">
         <?php foreach ($plans as $p): ?>
-          <label class="flex items-center justify-between bg-card2/50 border border-line2 rounded-lg px-3 py-2 cursor-pointer">
+          <label class="pick justify-between">
             <span class="flex items-center gap-2"><input type="radio" name="plan_id" value="<?= $p['id'] ?>"> <?= e($p['name']) ?></span>
             <span class="text-xs text-stone-400"><?= (int)$p['volume_gb'] ?>گیگ / <?= (int)$p['duration_days'] ?>روز — <span class="text-emerald-400"><?= toman((int)$p['price']) ?></span></span>
           </label>
@@ -40,7 +40,7 @@ if ((int)$r['max_days'] > 0) $limits[] = 'مدت: '.$r['min_days'].'–'.$r['max
       <?php if (!$templates): ?><p class="text-sm text-rose-400">قالبی تعریف نشده است.</p><?php endif; ?>
       <div class="space-y-2">
         <?php foreach ($templates as $t): ?>
-          <label class="flex items-center justify-between bg-card2/50 border border-line2 rounded-lg px-3 py-2 cursor-pointer">
+          <label class="pick justify-between">
             <span class="flex items-center gap-2"><input type="radio" name="template_id" value="<?= $t['id'] ?>"> <?= e($t['name']) ?></span>
             <span class="text-xs text-stone-400"><?= (int)$t['volume_gb'] ?>گیگ / <?= (int)$t['duration_days'] ?>روز</span>
           </label>
@@ -59,7 +59,7 @@ if ((int)$r['max_days'] > 0) $limits[] = 'مدت: '.$r['min_days'].'–'.$r['max
         <label class="block text-xs text-stone-400 mb-1">Squadها</label>
         <div class="grid grid-cols-2 gap-2">
           <?php foreach ($squads as $s): ?>
-            <label class="flex items-center gap-2 text-sm bg-card2/50 px-3 py-2 rounded-lg"><input type="checkbox" name="squads[]" value="<?= e($s['uuid']) ?>"> <?= e($s['name']) ?></label>
+            <label class="pick"><input type="checkbox" name="squads[]" value="<?= e($s['uuid']) ?>"> <?= e($s['name']) ?></label>
           <?php endforeach; ?>
           <?php if (!$squads): ?><span class="text-xs text-rose-400">Squad مجازی در دسترس نیست.</span><?php endif; ?>
         </div>

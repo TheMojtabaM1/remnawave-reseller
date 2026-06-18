@@ -29,9 +29,12 @@ function icon($d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentC
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($title ?? 'مدیریت') ?> — <?= e($appName) ?></title>
+<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/Arad-Regular.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/Arad-SemiBold.woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/app.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="/assets/js/app.js"></script>
 <script>tailwind.config={theme:{extend:{
   fontFamily:{sans:['Arad','sans-serif']},
   colors:{brand:{DEFAULT:'#f97316',light:'#fb923c',dark:'#ea580c'},ink:'#0a0a0c',card:'#141210',card2:'#1e1a16',line:'#2a241e',line2:'#3a322a'}
