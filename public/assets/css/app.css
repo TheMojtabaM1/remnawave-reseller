@@ -149,6 +149,6 @@ select{ color:#f5f5f4; }
 select option, select optgroup{ background:#1e1a16; color:#f5f5f4; }
 
 /* ── Kill horizontal over-scroll / bounce ── */
-html,body{ overflow-x:hidden; overscroll-behavior:none; max-width:100%; }
+body{ overflow-x:hidden; }
 
 /* perf: hint compositor for animated/blurred layers */

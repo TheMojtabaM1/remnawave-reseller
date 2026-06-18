@@ -29,7 +29,7 @@ $bal = $rsl ? (int)$rsl['balance'] : 0;
 </head>
 <body class="text-stone-100 min-h-screen">
 <div class="flex min-h-screen">
-  <aside id="sidebar" class="fixed md:sticky top-0 z-40 -translate-x-full md:translate-x-0 transition-transform duration-300 w-60 h-screen glass border-l border-white/5 overflow-y-auto">
+  <aside id="sidebar" class="fixed md:sticky top-0 right-0 z-40 translate-x-full md:translate-x-0 transition-transform duration-300 w-60 h-screen glass border-l border-white/5 overflow-y-auto">
     <div class="p-5 border-b border-white/5 flex items-center gap-3">
       <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-light to-brand-dark logo-dot flex items-center justify-center font-extrabold"><?= e(mb_strtoupper(mb_substr($appName,0,1))) ?></div>
       <div>
@@ -46,11 +46,11 @@ $bal = $rsl ? (int)$rsl['balance'] : 0;
       <?php endforeach; ?>
     </nav>
   </aside>
-  <div onclick="document.getElementById('sidebar').classList.add('-translate-x-full')" id="ovl" class="md:hidden fixed inset-0 bg-black/50 z-30 hidden"></div>
+  <div onclick="document.getElementById('sidebar').classList.add('translate-x-full')" id="ovl" class="md:hidden fixed inset-0 bg-black/50 z-30 hidden"></div>
 
   <div class="flex-1 flex flex-col min-w-0">
     <header class="sticky top-0 z-20 glass border-b border-white/5 px-4 py-3 flex items-center justify-between">
-      <button onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full');document.getElementById('ovl').classList.toggle('hidden')" class="md:hidden text-stone-300 text-xl">☰</button>
+      <button onclick="document.getElementById('sidebar').classList.toggle('translate-x-full');document.getElementById('ovl').classList.toggle('hidden')" class="md:hidden text-stone-300 text-xl">☰</button>
       <div class="font-bold text-lg"><?= e($title ?? '') ?></div>
       <div class="flex items-center gap-3">
         <span class="text-sm px-3 py-1 rounded-full <?= $bal < 0 ? 'bg-rose-500/15 text-rose-300' : 'bg-emerald-500/15 text-emerald-300' ?>"><?= toman($bal) ?></span>

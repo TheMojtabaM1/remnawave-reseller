@@ -31,8 +31,10 @@ final class ConfigController
         $where = ['reseller_id = :id', 'status <> "deleted"'];
         $params = [':id' => $id];
         if ($q !== '') {
-            $where[] = '(remnawave_username LIKE :q OR subscription_url LIKE :q)';
-            $params[':q'] = '%' . $q . '%';
+            // Distinct placeholders: native PDO can't reuse one name twice.
+            $where[] = '(remnawave_username LIKE :q1 OR subscription_url LIKE :q2)';
+            $params[':q1'] = '%' . $q . '%';
+            $params[':q2'] = '%' . $q . '%';
         }
         if (in_array($status, ['active', 'disabled', 'expired'], true)) {
             $where[] = 'status = :st';
@@ -43,6 +45,10 @@ final class ConfigController
         $total = (int) Db::scalar("SELECT COUNT(*) FROM configs WHERE {$w}", $params);
         $configs = Db::all("SELECT * FROM configs WHERE {$w} ORDER BY created_at DESC LIMIT {$perPage} OFFSET {$offset}", $params);
 
+        // Live-refresh usage for rows not synced in the last 2 minutes (the
+        // list/by-tag API omits usage; only the detailed user GET has it).
+        $configs = $this->refreshUsage($configs);
+
         View::render('reseller/configs/index', [
             'title' => 'کانفیگ‌ها',
             'configs' => $configs,
@@ -50,6 +56,44 @@ final class ConfigController
             'page' => $page, 'pages' => (int) ceil($total / $perPage),
             'perm' => fn($k) => ConfigService::perm($r, $k),
         ], 'reseller');
+    }
+
+    /** Refresh used-traffic for stale rows via the detailed user GET (bounded). */
+    private function refreshUsage(array $configs): array
+    {
+        $stale = array_filter($configs, fn($c) => $c['remnawave_uuid']
+            && (empty($c['last_synced_at']) || strtotime((string) $c['last_synced_at']) < time() - 120));
+        if (!$stale) {
+            return $configs;
+        }
+        try {
+            $rw = new RemnawaveClient();
+        } catch (\Throwable) {
+            return $configs;
+        }
+        $fresh = [];
+        $n = 0;
+        foreach ($stale as $c) {
+            if ($n++ >= 30) {
+                break;
+            }
+            try {
+                $user = $rw->getUser((string) $c['remnawave_uuid']);
+            } catch (RemnawaveException) {
+                continue;
+            }
+            $used = $rw->usedBytes($user);
+            $status = ($rw->userExpired($user) && $c['status'] === 'active') ? 'expired' : $c['status'];
+            Db::exec('UPDATE configs SET last_used_bytes=:u, status=:s, last_synced_at=UTC_TIMESTAMP() WHERE id=:id', [':u' => $used, ':s' => $status, ':id' => $c['id']]);
+            $fresh[$c['id']] = ['last_used_bytes' => $used, 'status' => $status];
+        }
+        foreach ($configs as &$c) {
+            if (isset($fresh[$c['id']])) {
+                $c['last_used_bytes'] = $fresh[$c['id']]['last_used_bytes'];
+                $c['status'] = $fresh[$c['id']]['status'];
+            }
+        }
+        return $configs;
     }
 
     public function create(): void

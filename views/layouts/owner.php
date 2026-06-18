@@ -41,7 +41,7 @@ function icon($d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentC
 <body class="text-stone-100 min-h-screen">
 <div class="flex min-h-screen">
   <!-- Sidebar -->
-  <aside id="sidebar" class="fixed md:sticky top-0 z-40 -translate-x-full md:translate-x-0 transition-transform duration-300 w-64 h-screen glass border-l border-white/5 overflow-y-auto">
+  <aside id="sidebar" class="fixed md:sticky top-0 right-0 z-40 translate-x-full md:translate-x-0 transition-transform duration-300 w-64 h-screen glass border-l border-white/5 overflow-y-auto">
     <div class="p-5 border-b border-white/5 flex items-center gap-3">
       <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-light to-brand-dark logo-dot flex items-center justify-center font-extrabold"><?= e(mb_strtoupper(mb_substr($appName,0,1))) ?></div>
       <div>
@@ -60,11 +60,11 @@ function icon($d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentC
       <?php endforeach; ?>
     </nav>
   </aside>
-  <div onclick="document.getElementById('sidebar').classList.add('-translate-x-full')" id="ovl" class="md:hidden fixed inset-0 bg-black/50 z-30 hidden"></div>
+  <div onclick="document.getElementById('sidebar').classList.add('translate-x-full')" id="ovl" class="md:hidden fixed inset-0 bg-black/50 z-30 hidden"></div>
 
   <div class="flex-1 flex flex-col min-w-0">
     <header class="sticky top-0 z-20 glass border-b border-white/5 px-4 py-3 flex items-center justify-between">
-      <button onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full');document.getElementById('ovl').classList.toggle('hidden')" class="md:hidden text-stone-300 text-xl">☰</button>
+      <button onclick="document.getElementById('sidebar').classList.toggle('translate-x-full');document.getElementById('ovl').classList.toggle('hidden')" class="md:hidden text-stone-300 text-xl">☰</button>
       <div class="font-bold text-lg"><?= e($title ?? '') ?></div>
       <div class="flex items-center gap-3">
         <a href="/owner/alerts" class="relative text-stone-300 hover:text-brand transition"><?= icon('M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9') ?><?php if ($unread > 0): ?><span class="absolute -top-1.5 -left-1.5 bg-brand text-white text-[10px] rounded-full px-1.5"><?= $unread ?></span><?php endif; ?></a>

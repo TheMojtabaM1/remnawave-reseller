@@ -213,6 +213,13 @@ final class RemnawaveClient
 
     public function usedBytes(array $user): int
     {
+        // Remnawave 2.x nests usage under userTraffic on the detailed user GET.
+        $nested = $user['userTraffic'] ?? [];
+        foreach (['usedTrafficBytes', 'lifetimeUsedTrafficBytes', 'usedTraffic'] as $k) {
+            if (isset($nested[$k]) && is_numeric($nested[$k])) {
+                return (int) $nested[$k];
+            }
+        }
         foreach (['usedTrafficBytes', 'usedTraffic', 'trafficUsedBytes', 'usedBytes', 'lifetimeUsedTrafficBytes'] as $k) {
             if (isset($user[$k]) && is_numeric($user[$k])) {
                 return (int) $user[$k];
@@ -275,7 +282,9 @@ final class RemnawaveClient
     {
         $options = [];
         if ($body !== null) {
-            $options['json'] = $body;
+            // An empty array must serialize as a JSON object {} (Remnawave
+            // validation rejects [] where it expects an object, e.g. revoke).
+            $options['json'] = $body === [] ? new \stdClass() : $body;
         }
 
         try {

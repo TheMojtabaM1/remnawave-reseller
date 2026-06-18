@@ -37,37 +37,43 @@ final class Db
         return self::$pdo;
     }
 
+    /** Prepare + execute, logging the SQL on failure for diagnostics. */
+    private static function run(string $sql, array $params): \PDOStatement
+    {
+        try {
+            $stmt = self::pdo()->prepare($sql);
+            $stmt->execute($params);
+            return $stmt;
+        } catch (\PDOException $e) {
+            error_log('[db] ' . $e->getMessage() . ' | SQL: ' . preg_replace('/\s+/', ' ', $sql)
+                . ' | params: ' . implode(',', array_keys($params)));
+            throw $e;
+        }
+    }
+
     /** Run a query with bound params, return all rows. */
     public static function all(string $sql, array $params = []): array
     {
-        $stmt = self::pdo()->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll();
+        return self::run($sql, $params)->fetchAll();
     }
 
     /** Run a query with bound params, return first row or null. */
     public static function one(string $sql, array $params = []): ?array
     {
-        $stmt = self::pdo()->prepare($sql);
-        $stmt->execute($params);
-        $row = $stmt->fetch();
+        $row = self::run($sql, $params)->fetch();
         return $row === false ? null : $row;
     }
 
     /** Run a single scalar query. */
     public static function scalar(string $sql, array $params = []): mixed
     {
-        $stmt = self::pdo()->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchColumn();
+        return self::run($sql, $params)->fetchColumn();
     }
 
     /** Execute an INSERT/UPDATE/DELETE, return affected-row count. */
     public static function exec(string $sql, array $params = []): int
     {
-        $stmt = self::pdo()->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->rowCount();
+        return self::run($sql, $params)->rowCount();
     }
 
     public static function insert(string $sql, array $params = []): int
