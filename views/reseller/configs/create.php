@@ -67,6 +67,17 @@ if ((int)$r['max_days'] > 0) $limits[] = 'مدت: '.$r['min_days'].'–'.$r['max
     </div>
     <?php endif; ?>
 
+    <?php if (!empty($canCustomName)): ?>
+    <div class="border-t border-line pt-3">
+      <label class="block text-xs text-stone-400 mb-1">نام دلخواه کانفیگ (اختیاری)</label>
+      <div class="flex items-center gap-2">
+        <span class="text-stone-500 text-sm font-mono"><?= e($r['prefix']) ?>_</span>
+        <input name="custom_name" value="<?= old('custom_name') ?>" maxlength="24" placeholder="مثلاً ali2024" pattern="[A-Za-z0-9]+" class="inp flex-1">
+      </div>
+      <div class="text-[11px] text-stone-500 mt-1">فقط حروف انگلیسی و عدد. خالی بگذارید تا نام تصادفی ساخته شود.</div>
+    </div>
+    <?php endif; ?>
+
     <button class="w-full btn-brand py-2.5 rounded-lg font-semibold">ساخت و کسر از کیف پول</button>
   </form>
 </div>

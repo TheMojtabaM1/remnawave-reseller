@@ -16,7 +16,7 @@ final class ResellerController
 {
     private const PERMS = [
         'can_create_config', 'can_edit_config', 'can_delete_config', 'can_renew',
-        'can_regenerate_subscription', 'can_create_custom', 'can_use_trial',
+        'can_regenerate_subscription', 'can_create_custom', 'can_custom_name', 'can_use_trial',
     ];
 
     public function index(): void

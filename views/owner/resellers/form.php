@@ -20,6 +20,7 @@ $permLabels = [
     'can_renew' => 'تمدید',
     'can_regenerate_subscription' => 'بازتولید لینک اشتراک',
     'can_create_custom' => 'ساخت کانفیگ سفارشی',
+    'can_custom_name' => 'انتخاب نام دلخواه کانفیگ',
     'can_use_trial' => 'استفاده از تست (روزمپ)',
 ];
 function field($label, $name, $value, $type = 'number', $hint = '') {

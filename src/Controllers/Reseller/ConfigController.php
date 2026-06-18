@@ -114,6 +114,7 @@ final class ConfigController
             'templates' => $templates,
             'squads' => $this->allowedSquads($r),
             'canCustom' => ConfigService::perm($r, 'can_create_custom'),
+            'canCustomName' => ConfigService::perm($r, 'can_custom_name'),
         ], 'reseller');
     }
 
@@ -124,6 +125,9 @@ final class ConfigController
 
         try {
             $opts = $this->buildOpts($request, $r, $source, $isCustom);
+            // Custom config name (only if the owner granted the permission).
+            $opts['custom_name'] = ConfigService::perm($r, 'can_custom_name')
+                ? trim((string) $request->post('custom_name')) : null;
             ConfigService::validateCreate($r, $opts['volume_gb'], $opts['days'], $opts['squads'], $isCustom);
 
             $svc = new ConfigService(new RemnawaveClient());

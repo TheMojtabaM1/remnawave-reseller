@@ -150,7 +150,7 @@ final class ConfigService
             throw new \DomainException(WalletService::affordError($reseller, $price));
         }
 
-        $username = $this->makeUsername($reseller['prefix']);
+        $username = $this->makeUsername($reseller['prefix'], $opts['custom_name'] ?? null);
         $rwUser = $this->rw->createUser([
             'username'             => $username,
             'status'               => 'ACTIVE',
@@ -349,9 +349,25 @@ final class ConfigService
         return 'RSL_' . $resellerId; // Remnawave tags must match ^[A-Z0-9_]+$
     }
 
-    private function makeUsername(string $prefix): string
+    private function makeUsername(string $prefix, ?string $custom = null): string
     {
         $prefix = preg_replace('/[^A-Za-z0-9]/', '', $prefix) ?: 'rsl';
+
+        // Custom suffix chosen by the reseller (if permitted). Sanitised to
+        // [A-Za-z0-9], 2–24 chars; falls back to random if empty/taken.
+        if ($custom !== null) {
+            $custom = substr(preg_replace('/[^A-Za-z0-9]/', '', $custom) ?? '', 0, 24);
+            if (strlen($custom) >= 2) {
+                $base = $prefix . '_' . $custom;
+                $username = $base;
+                // Ensure local uniqueness; Remnawave also rejects duplicates.
+                if (Db::scalar('SELECT id FROM configs WHERE remnawave_username = :u', [':u' => $username])) {
+                    $username = $base . '_' . bin2hex(random_bytes(2));
+                }
+                return $username;
+            }
+        }
+
         return $prefix . '_' . bin2hex(random_bytes(4)); // <prefix>_<random8>
     }
 }
