@@ -1,6 +1,9 @@
 <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
   <h2 class="text-lg font-semibold">کانفیگ‌های من</h2>
-  <?php if ($perm('can_create_config')): ?><a href="/panel/configs/create" class="btn-brand px-4 py-2 rounded-lg text-sm">➕ ساخت کانفیگ</a><?php endif; ?>
+  <div class="flex gap-2">
+    <a href="/panel/configs/archive" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm">🗄️ بایگانی</a>
+    <?php if ($perm('can_create_config')): ?><a href="/panel/configs/create" class="btn-brand px-4 py-2 rounded-lg text-sm">➕ ساخت کانفیگ</a><?php endif; ?>
+  </div>
 </div>
 
 <form method="get" class="flex flex-wrap gap-2 mb-4">

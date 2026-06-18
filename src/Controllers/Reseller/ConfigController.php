@@ -13,6 +13,7 @@ use App\Services\ConfigService;
 use App\Services\PricingService;
 use App\Services\RemnawaveClient;
 use App\Services\RemnawaveException;
+use App\Services\WalletService;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 
@@ -96,6 +97,44 @@ final class ConfigController
         return $configs;
     }
 
+    /** Live price + expiry preview for the create form (#130/#131). */
+    public function quote(Request $request): void
+    {
+        $r = Auth::reseller();
+        $source = (string) $request->get('source', 'plan');
+        $vol = 0; $days = 0; $price = 0;
+
+        try {
+            if ($source === 'plan') {
+                $p = Db::one('SELECT * FROM plans WHERE id=:id AND status="active"', [':id' => (int) $request->get('plan_id')]);
+                if ($p) { $vol = (int) $p['volume_gb']; $days = (int) $p['duration_days']; $price = PricingService::planPrice($p, $r); }
+            } elseif ($source === 'template') {
+                $t = Db::one('SELECT * FROM config_templates WHERE id=:id', [':id' => (int) $request->get('template_id')]);
+                if ($t) { $vol = (int) $t['volume_gb']; $days = (int) $t['duration_days']; $price = PricingService::customPrice($vol, $days, $r); }
+            } else {
+                $vol = max(0, (int) $request->get('volume_gb'));
+                $days = max(0, (int) $request->get('days'));
+                $price = $vol && $days ? PricingService::customPrice($vol, $days, $r) : 0;
+            }
+        } catch (\Throwable) {
+            // fall through with zeros
+        }
+
+        $expires = $days > 0
+            ? shamsi((new \DateTime("+{$days} days", new \DateTimeZone('UTC')))->format('Y-m-d H:i:s'), 'date')
+            : '—';
+
+        Response::json([
+            'ok' => $vol > 0 && $days > 0,
+            'price' => $price,
+            'price_label' => toman($price),
+            'volume_gb' => $vol,
+            'days' => $days,
+            'expires' => $expires,
+            'affordable' => WalletService::canAfford($r, $price),
+        ]);
+    }
+
     public function create(): void
     {
         $r = Auth::reseller();
@@ -107,6 +146,21 @@ final class ConfigController
         $plans = Db::all('SELECT * FROM plans WHERE status="active" ORDER BY price');
         $templates = Db::all('SELECT * FROM config_templates ORDER BY name');
 
+        // Squad lock (#137): names of the forced squads, for a read-only note.
+        $forced = ConfigService::forcedSquads($r);
+        $lockedNames = [];
+        if ($forced) {
+            try {
+                foreach ((new RemnawaveClient())->listInternalSquads() as $s) {
+                    if (in_array($s['uuid'], $forced, true)) {
+                        $lockedNames[] = $s['name'];
+                    }
+                }
+            } catch (RemnawaveException) {
+                $lockedNames = $forced;
+            }
+        }
+
         View::render('reseller/configs/create', [
             'title' => 'ساخت کانفیگ',
             'r' => $r,
@@ -115,6 +169,7 @@ final class ConfigController
             'squads' => $this->allowedSquads($r),
             'canCustom' => ConfigService::perm($r, 'can_create_custom'),
             'canCustomName' => ConfigService::perm($r, 'can_custom_name'),
+            'lockedNames' => $lockedNames,
         ], 'reseller');
     }
 
@@ -206,6 +261,31 @@ final class ConfigController
             flash('error', 'خطای Remnawave: ' . $e->getMessage());
         }
         Response::redirect('/panel/configs/' . $c['id']);
+    }
+
+    /** Manual "sync now" for a single config (#149). */
+    public function sync(Request $request, array $args): void
+    {
+        $r = Auth::reseller();
+        $c = $this->own((int) $args['id'], $r);
+        try {
+            (new ConfigService(new RemnawaveClient()))->syncUsage($c);
+            flash('success', 'مصرف به‌روزرسانی شد.');
+        } catch (RemnawaveException $e) {
+            flash('error', 'خطای Remnawave: ' . $e->getMessage());
+        }
+        Response::redirect('/panel/configs/' . $c['id']);
+    }
+
+    /** Archive / recycle-bin of deleted configs (read-only, #170). */
+    public function archive(): void
+    {
+        $r = Auth::reseller();
+        $configs = Db::all(
+            'SELECT * FROM configs WHERE reseller_id=:id AND status="deleted" ORDER BY last_synced_at DESC, id DESC LIMIT 200',
+            [':id' => $r['id']]
+        );
+        View::render('reseller/configs/archive', ['title' => 'بایگانی', 'configs' => $configs], 'reseller');
     }
 
     public function regenerate(Request $request, array $args): void

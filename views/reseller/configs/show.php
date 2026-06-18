@@ -58,6 +58,9 @@ $sub = (string) $c['subscription_url'];
   <div class="bg-card border border-line rounded-xl p-4">
     <h3 class="font-semibold mb-3">عملیات</h3>
     <div class="flex flex-wrap gap-2">
+      <form method="post" action="/panel/configs/<?= $c['id'] ?>/sync"><?= csrf_field() ?>
+        <button class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm">🔄 بروزرسانی مصرف</button>
+      </form>
       <?php if ($perm('can_edit_config')): ?>
         <form method="post" action="/panel/configs/<?= $c['id'] ?>/toggle"><?= csrf_field() ?>
           <button class="<?= $c['status']==='active'?'bg-amber-600 hover:bg-amber-500':'btn-brand' ?> px-4 py-2 rounded-lg text-sm"><?= $c['status']==='active'?'غیرفعال‌سازی':'فعال‌سازی' ?></button>

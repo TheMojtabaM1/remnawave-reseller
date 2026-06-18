@@ -59,11 +59,17 @@ $router->post('/owner/resellers/{id}/delete', [$O . 'ResellerController', 'destr
 // Wallet
 $router->post('/owner/resellers/{id}/wallet', [$O . 'WalletController', 'adjust'], [$owner, $csrf]);
 
+// Sync a reseller's configs (#149) + restore an archived config (#170)
+$router->post('/owner/resellers/{id}/sync', [$O . 'ResellerController', 'sync'], [$owner, $csrf]);
+$router->post('/owner/configs/{id}/restore', [$O . 'BulkController', 'restore'], [$owner, $csrf]);
+
 // Plans
 $router->get('/owner/plans', [$O . 'PlanController', 'index'], [$owner]);
 $router->post('/owner/plans', [$O . 'PlanController', 'store'], [$owner, $csrf]);
 $router->post('/owner/plans/{id}', [$O . 'PlanController', 'update'], [$owner, $csrf]);
 $router->post('/owner/plans/{id}/delete', [$O . 'PlanController', 'destroy'], [$owner, $csrf]);
+$router->get('/owner/plans/{id}/history', [$O . 'PlanController', 'history'], [$owner]);
+$router->post('/owner/plans/{id}/restore/{hid}', [$O . 'PlanController', 'restore'], [$owner, $csrf]);
 
 // Templates
 $router->get('/owner/templates', [$O . 'TemplateController', 'index'], [$owner]);
@@ -127,11 +133,14 @@ $router->get('/panel', [$R . 'DashboardController', 'index'], [$rsl]);
 // Configs
 $router->get('/panel/configs', [$R . 'ConfigController', 'index'], [$rsl]);
 $router->get('/panel/configs/create', [$R . 'ConfigController', 'create'], [$rsl]);
+$router->get('/panel/configs/quote', [$R . 'ConfigController', 'quote'], [$rsl]);
+$router->get('/panel/configs/archive', [$R . 'ConfigController', 'archive'], [$rsl]);
 $router->post('/panel/configs', [$R . 'ConfigController', 'store'], [$rsl, $csrf]);
 $router->get('/panel/configs/{id}', [$R . 'ConfigController', 'show'], [$rsl]);
 $router->post('/panel/configs/{id}/renew', [$R . 'ConfigController', 'renew'], [$rsl, $csrf]);
 $router->post('/panel/configs/{id}/toggle', [$R . 'ConfigController', 'toggle'], [$rsl, $csrf]);
 $router->post('/panel/configs/{id}/regenerate', [$R . 'ConfigController', 'regenerate'], [$rsl, $csrf]);
+$router->post('/panel/configs/{id}/sync', [$R . 'ConfigController', 'sync'], [$rsl, $csrf]);
 $router->post('/panel/configs/{id}/delete', [$R . 'ConfigController', 'destroy'], [$rsl, $csrf]);
 $router->get('/panel/configs/{id}/qr', [$R . 'ConfigController', 'qr'], [$rsl]);
 

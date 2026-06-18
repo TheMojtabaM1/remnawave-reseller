@@ -45,6 +45,12 @@ final class ConfigService
         return [];
     }
 
+    /** Forced/locked squads — if set, every config of this reseller uses these. */
+    public static function forcedSquads(array $reseller): array
+    {
+        return self::json($reseller['forced_squads'] ?? null);
+    }
+
     private static function activeCount(int $resellerId): int
     {
         return (int) Db::scalar(
@@ -115,9 +121,10 @@ final class ConfigService
             throw new \DomainException('این کانفیگ از سقف کل ترافیک مجاز شما عبور می‌کند (سقف: ' . $pool . ' گیگ).');
         }
 
-        // Squad whitelist: empty reseller list = unrestricted.
+        // Squad whitelist: empty reseller list = unrestricted. Skipped entirely
+        // when squads are force-locked by the owner (#137).
         $allowed = self::allowedSquads($reseller);
-        if ($allowed) {
+        if (!self::forcedSquads($reseller) && $allowed) {
             foreach ($squads as $uuid) {
                 if (!in_array($uuid, $allowed, true)) {
                     throw new \DomainException('یکی از Squadهای انتخابی مجاز شما نیست.');
@@ -143,7 +150,9 @@ final class ConfigService
     {
         $volumeGb = (int) $opts['volume_gb'];
         $days     = (int) $opts['days'];
-        $squads   = array_values($opts['squads']);
+        // Owner-forced squads (#137) override whatever the plan/reseller chose.
+        $forced   = self::forcedSquads($reseller);
+        $squads   = $forced ?: array_values($opts['squads']);
         $price    = (int) $opts['price'];
 
         if (!WalletService::canAfford($reseller, $price)) {

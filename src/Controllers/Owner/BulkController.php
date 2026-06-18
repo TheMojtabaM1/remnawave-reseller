@@ -12,6 +12,7 @@ use App\Services\AuditLogger;
 use App\Services\ConfigService;
 use App\Services\PricingService;
 use App\Services\RemnawaveClient;
+use App\Services\RemnawaveException;
 use App\Services\WalletService;
 
 final class BulkController
@@ -132,6 +133,70 @@ final class BulkController
         AuditLogger::log('bulk.create', 'reseller', $resellerId, ['count' => $ok, 'source' => $source]);
         flash($fail ? 'warning' : 'success', "ساخت گروهی: {$ok} کانفیگ ایجاد شد." . ($lastErr ? " توقف: {$lastErr}" : ''));
         Response::redirect('/owner/resellers/' . $resellerId);
+    }
+
+    /** Restore an archived (deleted) config by re-provisioning it (#170). */
+    public function restore(Request $request, array $args): void
+    {
+        $c = Db::one('SELECT * FROM configs WHERE id=:id AND status="deleted"', [':id' => (int) $args['id']]);
+        if (!$c) {
+            flash('error', 'کانفیگ بایگانی‌شده یافت نشد.');
+            redirect_back('/owner/resellers');
+        }
+        $reseller = Db::one('SELECT * FROM resellers WHERE id=:id', [':id' => $c['reseller_id']]);
+        if (!$reseller) {
+            flash('error', 'نماینده یافت نشد.');
+            redirect_back('/owner/resellers');
+        }
+
+        // Squads: forced > plan > template > reseller-allowed > first live squad.
+        $rw = new RemnawaveClient();
+        $squads = ConfigService::forcedSquads($reseller);
+        if (!$squads && $c['plan_id']) {
+            $squads = json_decode((string) (Db::scalar('SELECT allowed_squads FROM plans WHERE id=:id', [':id' => $c['plan_id']]) ?? '[]'), true) ?: [];
+        }
+        if (!$squads && $c['template_id']) {
+            $squads = json_decode((string) (Db::scalar('SELECT squads FROM config_templates WHERE id=:id', [':id' => $c['template_id']]) ?? '[]'), true) ?: [];
+        }
+        if (!$squads) {
+            $squads = ConfigService::allowedSquads($reseller);
+        }
+        if (!$squads) {
+            try {
+                $live = $rw->listInternalSquads();
+                $squads = $live ? [$live[0]['uuid']] : [];
+            } catch (\Throwable) {
+            }
+        }
+
+        $days = max(1, (int) $c['duration_days']);
+        try {
+            $rwUser = $rw->createUser([
+                'username'             => $c['remnawave_username'],
+                'status'               => 'ACTIVE',
+                'trafficLimitBytes'    => gb_to_bytes((int) $c['volume_gb']),
+                'trafficLimitStrategy' => config_value('default_traffic_strategy', 'NO_RESET'),
+                'expireAt'             => iso8601_from_days($days),
+                'hwidDeviceLimit'      => (int) $reseller['hwid_device_limit'],
+                'description'          => 'USVSIR restore #' . $reseller['id'],
+                'tag'                  => ConfigService::tag((int) $reseller['id']),
+                'squads'               => array_values($squads),
+            ]);
+        } catch (RemnawaveException $e) {
+            flash('error', 'بازیابی ناموفق: ' . $e->getMessage());
+            redirect_back('/owner/resellers/' . $reseller['id']);
+        }
+
+        $sub = $rw->subscriptionUrl($rwUser);
+        $exp = (new \DateTime("+{$days} days", new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
+        Db::exec(
+            'UPDATE configs SET remnawave_uuid=:uuid, subscription_url=:sub, status="active",
+                    expires_at=:exp, last_used_bytes=0, last_synced_at=UTC_TIMESTAMP() WHERE id=:id',
+            [':uuid' => (string) ($rwUser['uuid'] ?? ''), ':sub' => $sub, ':exp' => $exp, ':id' => $c['id']]
+        );
+        AuditLogger::log('config.restore', 'config', (int) $c['id'], ['username' => $c['remnawave_username']]);
+        flash('success', 'کانفیگ بازیابی شد: ' . $c['remnawave_username'] . ' (بدون کسر هزینه).');
+        redirect_back('/owner/resellers/' . $reseller['id']);
     }
 
     // ── helpers ──────────────────────────────────────────────────────

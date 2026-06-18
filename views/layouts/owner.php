@@ -82,5 +82,6 @@ function icon($d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentC
     </main>
   </div>
 </div>
+<?= \App\Core\View::partial('partials/watermark') ?>
 </body>
 </html>

@@ -8,6 +8,7 @@ $typeLabels = ['topup' => 'شارژ', 'charge' => 'فروش', 'refund' => 'با�
 <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
   <h2 class="text-lg font-semibold"><?= e($r['display_name'] ?: $r['username']) ?> <span class="text-sm text-stone-500">(<?= e($r['username']) ?>)</span></h2>
   <div class="flex gap-2">
+    <form method="post" action="/owner/resellers/<?= $r['id'] ?>/sync"><?= csrf_field() ?><button class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm">🔄 همگام‌سازی مصرف</button></form>
     <a href="/owner/resellers/<?= $r['id'] ?>/edit" class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-lg text-sm">ویرایش</a>
     <a href="/owner/resellers" class="bg-white/10 px-4 py-2 rounded-lg text-sm">بازگشت</a>
   </div>
@@ -85,6 +86,32 @@ $typeLabels = ['topup' => 'شارژ', 'charge' => 'فروش', 'refund' => 'با�
     </table>
   </div>
 </div>
+
+<!-- Archived (deleted) configs — restore (#170) -->
+<?php if (!empty($archived)): ?>
+<div class="bg-card border border-line rounded-xl p-4 mt-4">
+  <h3 class="font-semibold mb-3">🗄️ بایگانی کانفیگ‌های حذف‌شده (<?= count($archived) ?>)</h3>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="text-stone-400 text-xs"><tr><th class="text-right p-2">یوزرنیم</th><th class="text-right p-2">حجم</th><th class="text-right p-2">مدت</th><th class="text-right p-2">بازیابی</th></tr></thead>
+      <tbody>
+      <?php foreach ($archived as $c): ?>
+        <tr class="border-t border-line">
+          <td class="p-2 font-mono text-xs"><?= e($c['remnawave_username']) ?></td>
+          <td class="p-2"><?= (int)$c['volume_gb'] ?>گیگ</td>
+          <td class="p-2"><?= (int)$c['duration_days'] ?>روز</td>
+          <td class="p-2">
+            <form method="post" action="/owner/configs/<?= $c['id'] ?>/restore" onsubmit="return confirm('بازیابی این کانفیگ روی سرور؟ (بدون کسر هزینه)')">
+              <?= csrf_field() ?><button class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-lg text-xs">بازیابی</button>
+            </form>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+      </tbody>
+    </table>
+  </div>
+</div>
+<?php endif; ?>
 
 <!-- Transactions -->
 <div class="bg-card border border-line rounded-xl p-4 mt-4">

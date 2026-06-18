@@ -3,9 +3,11 @@ $isEdit = $reseller !== null;
 $action = $isEdit ? '/owner/resellers/' . $reseller['id'] : '/owner/resellers';
 $permVals = [];
 $squadVals = [];
+$forcedVals = [];
 if ($isEdit) {
     $permVals = json_decode((string) ($reseller['permissions'] ?? '[]'), true) ?: [];
     $squadVals = json_decode((string) ($reseller['allowed_squads'] ?? '[]'), true) ?: [];
+    $forcedVals = json_decode((string) ($reseller['forced_squads'] ?? '[]'), true) ?: [];
 }
 $v = function (string $k, $def = '') use ($isEdit, $reseller) {
     if ($isEdit && array_key_exists($k, $reseller) && $reseller[$k] !== null) {
@@ -124,6 +126,20 @@ function field($label, $name, $value, $type = 'number', $hint = '') {
           </label>
         <?php endforeach; ?>
       </div>
+    <?php endif; ?>
+
+    <?php if ($squads): ?>
+    <div class="border-t border-line pt-3 mt-3">
+      <h3 class="font-semibold mb-1">Squad اجباری (قفل) <span class="text-xs text-stone-500">— اگر انتخاب شود، همه‌ی کانفیگ‌های این نماینده فقط روی همین Squadها ساخته می‌شوند و نماینده حق انتخاب ندارد</span></h3>
+      <div class="grid md:grid-cols-3 gap-2 mt-2">
+        <?php foreach ($squads as $s): ?>
+          <label class="pick">
+            <input type="checkbox" name="forced_squads[]" value="<?= e($s['uuid']) ?>" <?= in_array($s['uuid'], $forcedVals, true) ? 'checked' : '' ?>>
+            <?= e($s['name']) ?>
+          </label>
+        <?php endforeach; ?>
+      </div>
+    </div>
     <?php endif; ?>
   </div>
 

@@ -66,10 +66,10 @@ final class ResellerController
             'INSERT INTO resellers
                 (username, password_hash, display_name, prefix, telegram_id, notes, status, access_expires_at,
                  balance, allow_debt, debt_limit, max_users, max_users_per_day, min_volume_gb, max_volume_gb,
-                 min_days, max_days, max_total_traffic_gb, hwid_device_limit, allowed_squads, permissions,
+                 min_days, max_days, max_total_traffic_gb, hwid_device_limit, allowed_squads, forced_squads, permissions,
                  price_per_gb, price_per_day, discount_percent, created_at)
              VALUES (:username,:ph,:dn,:prefix,:tg,:notes,:status,:exp,:bal,:adebt,:dlimit,:mu,:mupd,:minv,:maxv,
-                     :mind,:maxd,:pool,:hwid,:squads,:perms,:ppg,:ppd,:disc,UTC_TIMESTAMP())',
+                     :mind,:maxd,:pool,:hwid,:squads,:forced,:perms,:ppg,:ppd,:disc,UTC_TIMESTAMP())',
             array_merge($f, [
                 ':username' => $username,
                 ':ph' => password_hash($password, PASSWORD_ARGON2ID),
@@ -86,12 +86,32 @@ final class ResellerController
     {
         $r = $this->find((int) $args['id']);
         $configs = Db::all('SELECT * FROM configs WHERE reseller_id=:id AND status<>"deleted" ORDER BY created_at DESC LIMIT 100', [':id' => $r['id']]);
+        $archived = Db::all('SELECT * FROM configs WHERE reseller_id=:id AND status="deleted" ORDER BY id DESC LIMIT 50', [':id' => $r['id']]);
         $txs = Db::all('SELECT * FROM transactions WHERE reseller_id=:id ORDER BY id DESC LIMIT 50', [':id' => $r['id']]);
         $stats = [
             'active' => (int) Db::scalar('SELECT COUNT(*) FROM configs WHERE reseller_id=:id AND status="active"', [':id' => $r['id']]),
             'sales' => (int) Db::scalar("SELECT COALESCE(SUM(-amount),0) FROM transactions WHERE reseller_id=:id AND type='charge'", [':id' => $r['id']]),
         ];
-        View::render('owner/resellers/show', ['title' => 'نماینده: ' . ($r['display_name'] ?: $r['username']), 'r' => $r, 'configs' => $configs, 'txs' => $txs, 'stats' => $stats, 'squads' => $this->squads()]);
+        View::render('owner/resellers/show', ['title' => 'نماینده: ' . ($r['display_name'] ?: $r['username']), 'r' => $r, 'configs' => $configs, 'archived' => $archived, 'txs' => $txs, 'stats' => $stats, 'squads' => $this->squads()]);
+    }
+
+    /** Sync usage/expiry for all of a reseller's configs (#149). */
+    public function sync(Request $request, array $args): void
+    {
+        $r = $this->find((int) $args['id']);
+        $configs = Db::all('SELECT * FROM configs WHERE reseller_id=:id AND status IN ("active","disabled") LIMIT 200', [':id' => $r['id']]);
+        $svc = new \App\Services\ConfigService(new RemnawaveClient());
+        $ok = 0;
+        foreach ($configs as $c) {
+            try {
+                $svc->syncUsage($c);
+                $ok++;
+            } catch (\Throwable) {
+            }
+        }
+        AuditLogger::log('reseller.sync', 'reseller', (int) $r['id'], ['synced' => $ok]);
+        flash('success', "همگام‌سازی انجام شد: {$ok} کانفیگ.");
+        Response::redirect('/owner/resellers/' . $r['id']);
     }
 
     public function edit(Request $request, array $args): void
@@ -113,7 +133,7 @@ final class ResellerController
         $sql = 'UPDATE resellers SET display_name=:dn, telegram_id=:tg, notes=:notes, status=:status,
                     access_expires_at=:exp, allow_debt=:adebt, debt_limit=:dlimit, max_users=:mu,
                     max_users_per_day=:mupd, min_volume_gb=:minv, max_volume_gb=:maxv, min_days=:mind,
-                    max_days=:maxd, max_total_traffic_gb=:pool, hwid_device_limit=:hwid, allowed_squads=:squads,
+                    max_days=:maxd, max_total_traffic_gb=:pool, hwid_device_limit=:hwid, allowed_squads=:squads, forced_squads=:forced,
                     permissions=:perms, price_per_gb=:ppg, price_per_day=:ppd, discount_percent=:disc';
         $params = $f;
         unset($params[':bal']); // balance only changes through wallet
@@ -175,6 +195,7 @@ final class ResellerController
             $perms[$p] = $request->bool('perm_' . $p);
         }
         $squads = array_values(array_filter((array) $request->arr('allowed_squads')));
+        $forced = array_values(array_filter((array) $request->arr('forced_squads')));
         $nullableInt = fn(string $k) => ($v = $request->post($k)) === '' || $v === null ? null : (int) $v;
 
         $exp = trim((string) $request->post('access_expires_at'));
@@ -196,6 +217,7 @@ final class ResellerController
             ':pool'   => (int) $request->post('max_total_traffic_gb', 0),
             ':hwid'   => (int) $request->post('hwid_device_limit', 0),
             ':squads' => json_encode($squads, JSON_UNESCAPED_UNICODE),
+            ':forced' => $forced ? json_encode($forced, JSON_UNESCAPED_UNICODE) : null,
             ':perms'  => json_encode($perms),
             ':ppg'    => $nullableInt('price_per_gb'),
             ':ppd'    => $nullableInt('price_per_day'),

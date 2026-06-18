@@ -52,9 +52,12 @@
             <button class="bg-brand hover:bg-brand-light px-4 py-1.5 rounded-lg text-xs">ذخیره</button>
           </div>
         </form>
-        <form method="post" action="/owner/plans/<?= $p['id'] ?>/delete" onsubmit="return confirm('حذف پلن؟')" class="mt-1">
-          <?= csrf_field() ?><button class="text-rose-400 text-xs hover:underline">حذف پلن</button>
-        </form>
+        <div class="flex items-center gap-3 mt-1">
+          <a href="/owner/plans/<?= $p['id'] ?>/history" class="text-stone-400 text-xs hover:text-brand">📜 تاریخچه</a>
+          <form method="post" action="/owner/plans/<?= $p['id'] ?>/delete" onsubmit="return confirm('حذف پلن؟')">
+            <?= csrf_field() ?><button class="text-rose-400 text-xs hover:underline">حذف پلن</button>
+          </form>
+        </div>
       </div>
     <?php endforeach; ?>
     <?php if (!$plans): ?><div class="bg-card border border-line rounded-xl p-6 text-center text-stone-500">پلنی تعریف نشده است.</div><?php endif; ?>

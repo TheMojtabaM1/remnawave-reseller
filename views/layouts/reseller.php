@@ -72,5 +72,6 @@ $bal = $rsl ? (int)$rsl['balance'] : 0;
     </main>
   </div>
 </div>
+<?= \App\Core\View::partial('partials/watermark') ?>
 </body>
 </html>
