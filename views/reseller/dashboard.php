@@ -1,9 +1,40 @@
-<?php $canRenew = \App\Services\ConfigService::perm($r, 'can_renew'); ?>
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+<?php
+$canRenew = \App\Services\ConfigService::perm($r, 'can_renew');
+$usersRemaining = $stats['max_users'] > 0 ? max(0, $stats['max_users'] - $stats['used_slots']) : null; // null = unlimited
+$gbRemaining = $stats['pool_gb'] > 0 ? max(0, $stats['pool_gb'] - $stats['allocated_gb']) : null;
+$usersPct = $stats['max_users'] > 0 ? min(100, round($stats['used_slots'] / $stats['max_users'] * 100)) : 0;
+$gbPct = $stats['pool_gb'] > 0 ? min(100, round($stats['allocated_gb'] / $stats['pool_gb'] * 100)) : 0;
+?>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
   <div class="<?= $stats['balance']<0?'bg-rose-600':'bg-emerald-600' ?> rounded-xl p-4"><div class="text-xs text-white/80">موجودی کیف پول</div><div class="text-lg font-bold mt-1"><?= toman($stats['balance']) ?></div></div>
   <div class="bg-brand rounded-xl p-4"><div class="text-xs text-white/80">کانفیگ فعال</div><div class="text-lg font-bold mt-1"><?= number_format($stats['active']) ?></div></div>
-  <div class="bg-violet-600 rounded-xl p-4"><div class="text-xs text-white/80">حجم تخصیص‌یافته</div><div class="text-lg font-bold mt-1"><?= number_format($stats['allocated_gb']) ?> گیگ</div></div>
-  <div class="bg-amber-600 rounded-xl p-4"><div class="text-xs text-white/80">ساخت امروز</div><div class="text-lg font-bold mt-1"><?= number_format($stats['today']) ?></div></div>
+  <div class="bg-violet-600 rounded-xl p-4"><div class="text-xs text-white/80">ساخت امروز</div><div class="text-lg font-bold mt-1"><?= number_format($stats['today']) ?></div></div>
+  <div class="bg-sky-600 rounded-xl p-4"><div class="text-xs text-white/80">کل فروش</div><div class="text-lg font-bold mt-1"><?= toman($stats['sales']) ?></div></div>
+</div>
+
+<!-- Remaining quotas -->
+<div class="grid sm:grid-cols-2 gap-3 mb-6">
+  <div class="glass rounded-2xl p-4">
+    <div class="flex justify-between items-baseline mb-2">
+      <span class="text-sm text-stone-300">یوزر/کانفیگ باقی‌مانده</span>
+      <span class="font-bold text-lg"><?= $usersRemaining === null ? 'نامحدود' : '<span class="text-brand-light">'.number_format($usersRemaining).'</span> از '.number_format($stats['max_users']) ?></span>
+    </div>
+    <?php if ($usersRemaining !== null): ?>
+      <div class="h-2 bg-white/10 rounded"><div class="h-2 rounded <?= $usersPct>=90?'bg-rose-500':'bg-brand' ?>" style="width:<?= $usersPct ?>%"></div></div>
+      <div class="text-[11px] text-stone-500 mt-1">مصرف‌شده: <?= number_format($stats['used_slots']) ?> (<?= $usersPct ?>٪)</div>
+    <?php else: ?><div class="text-[11px] text-stone-500">سقف تعداد کانفیگ برای شما تعیین نشده است.</div><?php endif; ?>
+  </div>
+
+  <div class="glass rounded-2xl p-4">
+    <div class="flex justify-between items-baseline mb-2">
+      <span class="text-sm text-stone-300">حجم باقی‌مانده</span>
+      <span class="font-bold text-lg"><?= $gbRemaining === null ? 'نامحدود' : '<span class="text-brand-light">'.number_format($gbRemaining).'</span> از '.number_format($stats['pool_gb']).' گیگ' ?></span>
+    </div>
+    <?php if ($gbRemaining !== null): ?>
+      <div class="h-2 bg-white/10 rounded"><div class="h-2 rounded <?= $gbPct>=90?'bg-rose-500':'bg-emerald-500' ?>" style="width:<?= $gbPct ?>%"></div></div>
+      <div class="text-[11px] text-stone-500 mt-1">تخصیص‌یافته: <?= number_format($stats['allocated_gb']) ?> گیگ (<?= $gbPct ?>٪)</div>
+    <?php else: ?><div class="text-[11px] text-stone-500">سقف کل ترافیک برای شما تعیین نشده است.</div><?php endif; ?>
+  </div>
 </div>
 
 <?php if ($canCreate): ?>

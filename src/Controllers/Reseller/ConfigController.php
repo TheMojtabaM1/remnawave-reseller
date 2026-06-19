@@ -180,6 +180,11 @@ final class ConfigController
 
         try {
             $opts = $this->buildOpts($request, $r, $source, $isCustom);
+            // Owner-forced squads (#137) win over plan/template/custom selection.
+            $forced = ConfigService::forcedSquads($r);
+            if ($forced) {
+                $opts['squads'] = $forced;
+            }
             // Custom config name (only if the owner granted the permission).
             $opts['custom_name'] = ConfigService::perm($r, 'can_custom_name')
                 ? trim((string) $request->post('custom_name')) : null;

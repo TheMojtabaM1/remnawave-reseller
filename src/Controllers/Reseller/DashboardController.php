@@ -19,10 +19,13 @@ final class DashboardController
         $stats = [
             'balance' => (int) $r['balance'],
             'active' => (int) Db::scalar('SELECT COUNT(*) FROM configs WHERE reseller_id=:id AND status="active"', [':id' => $id]),
+            'used_slots' => (int) Db::scalar('SELECT COUNT(*) FROM configs WHERE reseller_id=:id AND status IN ("active","disabled")', [':id' => $id]),
             'total' => (int) Db::scalar('SELECT COUNT(*) FROM configs WHERE reseller_id=:id AND status<>"deleted"', [':id' => $id]),
             'allocated_gb' => (int) Db::scalar('SELECT COALESCE(SUM(volume_gb),0) FROM configs WHERE reseller_id=:id AND status IN ("active","disabled")', [':id' => $id]),
             'today' => (int) Db::scalar('SELECT COUNT(*) FROM configs WHERE reseller_id=:id AND DATE(created_at)=UTC_DATE()', [':id' => $id]),
             'sales' => (int) Db::scalar("SELECT COALESCE(SUM(-amount),0) FROM transactions WHERE reseller_id=:id AND type='charge'", [':id' => $id]),
+            'max_users' => (int) $r['max_users'],
+            'pool_gb' => (int) $r['max_total_traffic_gb'],
         ];
 
         $expiring = Db::all(
