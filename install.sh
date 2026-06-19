@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────
-#  USVSIR — Remnawave Reseller (Agent) Management Panel
+#  Remnawave Reseller (Agent) Management Panel
 #  One-line installer (interactive, idempotent).
 #
-#    bash <(curl -fsSL https://raw.githubusercontent.com/TheMojtabam/USVSIR/main/install.sh)
+#    bash <(curl -fsSL https://raw.githubusercontent.com/TheMojtabaM1/remnawave-reseller/main/install.sh)
 #
 #  Nothing is hardcoded: panel URL, API token, domain, owner creds and DB
 #  settings are all entered below.
 # ─────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-REPO_URL="https://github.com/TheMojtabam/USVSIR.git"
-APP_DIR="/opt/usvsir"
+REPO_URL="https://github.com/TheMojtabaM1/remnawave-reseller.git"
+APP_DIR="/opt/remnawave-reseller"
 BRANCH="main"
 
 c_green="\033[0;32m"; c_red="\033[0;31m"; c_yellow="\033[0;33m"; c_blue="\033[0;36m"; c_off="\033[0m"
@@ -42,16 +42,16 @@ read -rp "توکن API پنل Remnawave: " RW_API_TOKEN
 [ -n "$RW_API_TOKEN" ] || die "توکن API الزامی است."
 
 info "بررسی اتصال به Remnawave..."
-HTTP=$(curl -s -o /tmp/usvsir_squads.json -w "%{http_code}" -m 20 \
+HTTP=$(curl -s -o /tmp/rwr_squads.json -w "%{http_code}" -m 20 \
   -H "Authorization: Bearer ${RW_API_TOKEN}" "${RW_BASE_URL}/api/internal-squads" || echo "000")
 if [ "$HTTP" != "200" ]; then
   die "اتصال/احراز هویت ناموفق بود (HTTP $HTTP). آدرس و توکن را بررسی کنید."
 fi
 ok "اتصال برقرار شد. Squadهای موجود:"
 if command -v jq >/dev/null 2>&1; then
-  jq -r '.response.internalSquads[]? | "  - \(.name)  [\(.uuid)]"' /tmp/usvsir_squads.json 2>/dev/null || true
+  jq -r '.response.internalSquads[]? | "  - \(.name)  [\(.uuid)]"' /tmp/rwr_squads.json 2>/dev/null || true
 else
-  grep -oE '"name":"[^"]*"' /tmp/usvsir_squads.json | sed 's/"name":/  - /; s/"//g' || true
+  grep -oE '"name":"[^"]*"' /tmp/rwr_squads.json | sed 's/"name":/  - /; s/"//g' || true
 fi
 warn "انتخاب Squadهای مجاز برای هر پلن/نماینده، داخل خود پنل انجام می‌شود."
 
@@ -72,11 +72,11 @@ DB_CHOICE="${DB_CHOICE:-1}"
 if [ "$DB_CHOICE" = "2" ]; then
   read -rp "DB host [127.0.0.1]: " DB_HOST; DB_HOST="${DB_HOST:-127.0.0.1}"
   read -rp "DB port [3306]: " DB_PORT; DB_PORT="${DB_PORT:-3306}"
-  read -rp "DB name [usvsir]: " DB_NAME; DB_NAME="${DB_NAME:-usvsir}"
-  read -rp "DB user [usvsir]: " DB_USER; DB_USER="${DB_USER:-usvsir}"
+  read -rp "DB name [remnawave_reseller]: " DB_NAME; DB_NAME="${DB_NAME:-remnawave_reseller}"
+  read -rp "DB user [remnawave_reseller]: " DB_USER; DB_USER="${DB_USER:-remnawave_reseller}"
   read -rsp "DB password: " DB_PASS; echo
 else
-  DB_HOST="127.0.0.1"; DB_PORT="3306"; DB_NAME="usvsir"; DB_USER="usvsir"
+  DB_HOST="127.0.0.1"; DB_PORT="3306"; DB_NAME="remnawave_reseller"; DB_USER="remnawave_reseller"
   DB_PASS="$(head -c 18 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 20)"
 fi
 
@@ -158,7 +158,7 @@ fi
 info "نوشتن .env ..."
 APP_KEY="$(head -c 32 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 40)"
 cat > "$APP_DIR/.env" <<ENV
-APP_NAME="USVSIR Panel"
+APP_NAME="Remnawave Reseller"
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://${APP_DOMAIN}
@@ -212,7 +212,7 @@ ${APP_DOMAIN} {
         Referrer-Policy no-referrer
         -Server
     }
-    log { output file /var/log/caddy/usvsir.log }
+    log { output file /var/log/caddy/remnawave-reseller.log }
 }
 CADDY
 systemctl enable --now php${PHP_VER}-fpm >/dev/null 2>&1 || true
@@ -222,9 +222,9 @@ systemctl reload caddy 2>/dev/null || systemctl restart caddy || true
 
 # ── Cron jobs ────────────────────────────────────────────────────────
 info "نصب کران‌جاب‌ها..."
-CRON_FILE="/etc/cron.d/usvsir"
+CRON_FILE="/etc/cron.d/remnawave-reseller"
 cat > "$CRON_FILE" <<CRON
-# USVSIR scheduled jobs (UTC)
+# Remnawave Reseller scheduled jobs (UTC)
 */5 * * * * www-data php ${APP_DIR}/cron/sync.php >> ${APP_DIR}/storage/logs/cron.log 2>&1
 */10 * * * * www-data php ${APP_DIR}/cron/autosuspend.php >> ${APP_DIR}/storage/logs/cron.log 2>&1
 30 3 * * * www-data php ${APP_DIR}/cron/cleanup.php >> ${APP_DIR}/storage/logs/cron.log 2>&1

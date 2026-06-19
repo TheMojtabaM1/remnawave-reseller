@@ -21,8 +21,8 @@ final class Db
 
         $host = (string) Config::env('DB_HOST', '127.0.0.1');
         $port = (string) Config::env('DB_PORT', '3306');
-        $name = (string) Config::env('DB_NAME', 'usvsir');
-        $user = (string) Config::env('DB_USER', 'usvsir');
+        $name = (string) Config::env('DB_NAME', 'remnawave_reseller');
+        $user = (string) Config::env('DB_USER', 'remnawave_reseller');
         $pass = (string) Config::env('DB_PASS', '');
 
         $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";

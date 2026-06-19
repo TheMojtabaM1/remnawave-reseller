@@ -178,7 +178,7 @@ final class BulkController
                 'trafficLimitStrategy' => config_value('default_traffic_strategy', 'NO_RESET'),
                 'expireAt'             => iso8601_from_days($days),
                 'hwidDeviceLimit'      => (int) $reseller['hwid_device_limit'],
-                'description'          => 'USVSIR restore #' . $reseller['id'],
+                'description'          => 'Reseller restore #' . $reseller['id'],
                 'tag'                  => ConfigService::tag((int) $reseller['id']),
                 'squads'               => array_values($squads),
             ]);

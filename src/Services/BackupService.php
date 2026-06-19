@@ -26,11 +26,11 @@ final class BackupService
     {
         $host = (string) Config::env('DB_HOST', '127.0.0.1');
         $port = (string) Config::env('DB_PORT', '3306');
-        $name = (string) Config::env('DB_NAME', 'usvsir');
-        $user = (string) Config::env('DB_USER', 'usvsir');
+        $name = (string) Config::env('DB_NAME', 'remnawave_reseller');
+        $user = (string) Config::env('DB_USER', 'remnawave_reseller');
         $pass = (string) Config::env('DB_PASS', '');
 
-        $file = self::dir() . '/usvsir_' . gmdate('Y-m-d_His') . '.sql.gz';
+        $file = self::dir() . '/remnawave_reseller_' . gmdate('Y-m-d_His') . '.sql.gz';
 
         $cmd = sprintf(
             'mysqldump --single-transaction --quick --no-tablespaces -h%s -P%s -u%s %s %s 2>/dev/null | gzip > %s',
@@ -55,7 +55,7 @@ final class BackupService
     public static function rotate(): void
     {
         $keep = (int) Config::env('BACKUP_KEEP', 14);
-        $files = glob(self::dir() . '/usvsir_*.sql.gz') ?: [];
+        $files = glob(self::dir() . '/remnawave_reseller_*.sql.gz') ?: [];
         usort($files, fn($a, $b) => filemtime($b) <=> filemtime($a));
         foreach (array_slice($files, $keep) as $old) {
             @unlink($old);
@@ -64,7 +64,7 @@ final class BackupService
 
     public static function latest(): ?string
     {
-        $files = glob(self::dir() . '/usvsir_*.sql.gz') ?: [];
+        $files = glob(self::dir() . '/remnawave_reseller_*.sql.gz') ?: [];
         if (!$files) {
             return null;
         }
@@ -74,7 +74,7 @@ final class BackupService
 
     public static function list(): array
     {
-        $files = glob(self::dir() . '/usvsir_*.sql.gz') ?: [];
+        $files = glob(self::dir() . '/remnawave_reseller_*.sql.gz') ?: [];
         usort($files, fn($a, $b) => filemtime($b) <=> filemtime($a));
         return array_map(fn($f) => [
             'name' => basename($f),
@@ -88,8 +88,8 @@ final class BackupService
     {
         $host = (string) Config::env('DB_HOST', '127.0.0.1');
         $port = (string) Config::env('DB_PORT', '3306');
-        $name = (string) Config::env('DB_NAME', 'usvsir');
-        $user = (string) Config::env('DB_USER', 'usvsir');
+        $name = (string) Config::env('DB_NAME', 'remnawave_reseller');
+        $user = (string) Config::env('DB_USER', 'remnawave_reseller');
         $pass = (string) Config::env('DB_PASS', '');
 
         $reader = str_ends_with($path, '.gz') ? 'gunzip -c ' . escapeshellarg($path) : 'cat ' . escapeshellarg($path);

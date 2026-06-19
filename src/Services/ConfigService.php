@@ -167,7 +167,7 @@ final class ConfigService
             'trafficLimitStrategy' => $opts['traffic_strategy'] ?? 'NO_RESET',
             'expireAt'             => iso8601_from_days($days),
             'hwidDeviceLimit'      => (int) ($opts['hwid_limit'] ?? $reseller['hwid_device_limit']),
-            'description'          => 'USVSIR reseller #' . $reseller['id'] . ' (' . $reseller['username'] . ')',
+            'description'          => 'Reseller #' . $reseller['id'] . ' (' . $reseller['username'] . ')',
             'tag'                  => self::tag((int) $reseller['id']),
             'squads'               => $squads,
         ]);

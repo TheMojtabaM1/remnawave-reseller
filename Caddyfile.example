@@ -1,9 +1,9 @@
-# USVSIR — Caddy vhost example (automatic HTTPS).
+# Remnawave Reseller — Caddy vhost example (automatic HTTPS).
 # Replace agent.example.com with your domain and adjust the PHP-FPM socket
 # if your distro differs. The installer writes this automatically.
 
 agent.example.com {
-    root * /opt/usvsir/public
+    root * /opt/remnawave-reseller/public
     encode gzip
 
     # PHP-FPM (Debian/Ubuntu default socket path; version may vary)
@@ -25,6 +25,6 @@ agent.example.com {
     }
 
     log {
-        output file /var/log/caddy/usvsir.log
+        output file /var/log/caddy/remnawave-reseller.log
     }
 }

@@ -1,6 +1,6 @@
 {
-    "name": "themojtabam/usvsir",
-    "description": "USVSIR — Remnawave Reseller (Agent) Management Panel",
+    "name": "themojtabam/remnawave-reseller",
+    "description": "Remnawave Reseller — Agent Management Panel",
     "type": "project",
     "license": "MIT",
     "require": {

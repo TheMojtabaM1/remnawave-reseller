@@ -33,7 +33,7 @@ final class BackupController
     {
         $name = basename((string) $request->get('file', ''));
         $path = BackupService::dir() . '/' . $name;
-        if ($name === '' || !is_file($path) || !str_starts_with($name, 'usvsir_')) {
+        if ($name === '' || !is_file($path) || !str_starts_with($name, 'remnawave_reseller_')) {
             $latest = BackupService::latest();
             if (!$latest) {
                 Response::abort(404, 'پشتیبانی موجود نیست');

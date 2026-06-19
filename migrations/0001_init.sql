@@ -1,4 +1,4 @@
--- USVSIR initial schema. Idempotent: safe to re-run.
+-- Remnawave Reseller initial schema. Idempotent: safe to re-run.
 -- All money is INT Toman. All timestamps stored UTC.
 
 CREATE TABLE IF NOT EXISTS migrations (

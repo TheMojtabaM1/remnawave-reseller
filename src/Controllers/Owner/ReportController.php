@@ -60,7 +60,7 @@ final class ReportController
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
-        $filename = 'usvsir_reSellers_' . gmdate('Ymd_His') . '.xlsx';
+        $filename = 'remnawave_reseller_resellers_' . gmdate('Ymd_His') . '.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');

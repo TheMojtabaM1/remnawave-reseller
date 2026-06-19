@@ -46,7 +46,7 @@ if ($existing) {
 
 // Default settings (only insert if missing).
 $defaults = [
-    'app_name'                 => getenv('APP_NAME') ?: 'USVSIR Panel',
+    'app_name'                 => getenv('APP_NAME') ?: 'Remnawave Reseller',
     'cleanup_grace_days'       => getenv('CLEANUP_GRACE_DAYS') ?: '3',
     'low_balance_threshold'    => getenv('LOW_BALANCE_THRESHOLD') ?: '50000',
     'default_traffic_strategy' => getenv('DEFAULT_TRAFFIC_STRATEGY') ?: 'NO_RESET',

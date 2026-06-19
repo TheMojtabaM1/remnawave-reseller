@@ -27,7 +27,7 @@ final class Auth
         // Per-port session name so the owner/reseller demo portals (different
         // ports, same host) don't share one login. In production (single
         // domain) this is one site with role-based routing.
-        session_name('usvsir_' . (int) ($_SERVER['SERVER_PORT'] ?? 0));
+        session_name('rwr_' . (int) ($_SERVER['SERVER_PORT'] ?? 0));
         session_start();
     }
 
