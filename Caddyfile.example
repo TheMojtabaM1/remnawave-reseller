@@ -1,8 +1,27 @@
-# Remnawave Reseller — Caddy vhost example (automatic HTTPS).
-# Replace agent.example.com with your domain and adjust the PHP-FPM socket
-# if your distro differs. The installer writes this automatically.
+# Remnawave Reseller — Caddy vhost example (admin + reseller on custom ports).
+#
+# This host already runs Remnawave on ports 80/443, so the two panels are served
+# on custom HTTPS ports instead. The installer writes this file for you; this
+# example is for manual setups. Replace agent.example.com, the ports and the
+# PHP-FPM socket path as needed.
+#
+# Certificate strategy: because port 443 is busy, Caddy does NOT run ACME itself
+# (that would make it hold port 80 to answer future challenges). Instead the cert
+# is obtained out-of-band by certbot --standalone (which needs port 80 only for
+# the brief HTTP-01 challenge) and supplied to Caddy explicitly via `tls`. With
+# `auto_https disable_redirects` and an explicit cert, Caddy never binds port 80,
+# so Remnawave keeps it. See install.sh for the certbot issuance + renewal flow.
+#
+#   certbot certonly --standalone -d agent.example.com   # run with :80 free
+#   # then point the tls lines below at the issued cert (copied to a
+#   # caddy-readable path, since /etc/letsencrypt/live is root-only)
 
-agent.example.com {
+{
+    auto_https disable_redirects
+}
+
+# Shared definition imported by both panels (same app, one certificate).
+(panel) {
     root * /opt/remnawave-reseller/public
     encode gzip
 
@@ -17,14 +36,26 @@ agent.example.com {
     }
     respond @forbidden 404
 
+    # Certificate supplied explicitly (no ACME in Caddy → Caddy never needs :80).
+    # Use `tls internal` instead for a self-signed cert if you have none yet.
+    tls /etc/caddy/certs/agent.example.com.crt /etc/caddy/certs/agent.example.com.key
+
     header {
         X-Content-Type-Options nosniff
         X-Frame-Options DENY
         Referrer-Policy no-referrer
         -Server
     }
+}
 
-    log {
-        output file /var/log/caddy/remnawave-reseller.log
-    }
+# Admin panel
+https://agent.example.com:8443 {
+    import panel
+    log { output file /var/log/caddy/remnawave-reseller-admin.log }
+}
+
+# Reseller panel
+https://agent.example.com:9443 {
+    import panel
+    log { output file /var/log/caddy/remnawave-reseller-reseller.log }
 }
