@@ -291,7 +291,11 @@ CLEANUP_GRACE_DAYS=3
 LOW_BALANCE_THRESHOLD=50000
 BACKUP_KEEP=14
 ENV
-chmod 600 "$APP_DIR/.env"
+# php-fpm and the cron jobs run as www-data and must be able to read .env
+# (DB credentials, RW token, …); root-owned 600 would make the web app connect
+# to MySQL with no password and every page 500s.
+chown www-data:www-data "$APP_DIR/.env"
+chmod 640 "$APP_DIR/.env"
 
 # ── Migrate + seed ───────────────────────────────────────────────────
 info "اجرای مهاجرت‌ها..."
@@ -363,7 +367,10 @@ fi
 
 # ── Caddy vhosts (admin + reseller panels on custom HTTPS ports) ─────
 info "پیکربندی Caddy (پنل ادمین: ${ADMIN_PORT} | پنل نماینده: ${RESELLER_PORT})..."
+# Caddy runs as the `caddy` user; it must own its log dir or it can't open the
+# per-site log files and the service exits on startup.
 mkdir -p /var/log/caddy
+chown caddy:caddy /var/log/caddy 2>/dev/null || true
 
 cat > /etc/caddy/Caddyfile <<CADDY
 {
@@ -394,12 +401,16 @@ cat > /etc/caddy/Caddyfile <<CADDY
 
 https://${APP_DOMAIN}:${ADMIN_PORT} {
     import panel
-    log { output file /var/log/caddy/remnawave-reseller-admin.log }
+    log {
+        output file /var/log/caddy/remnawave-reseller-admin.log
+    }
 }
 
 https://${APP_DOMAIN}:${RESELLER_PORT} {
     import panel
-    log { output file /var/log/caddy/remnawave-reseller-reseller.log }
+    log {
+        output file /var/log/caddy/remnawave-reseller-reseller.log
+    }
 }
 CADDY
 

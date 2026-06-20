@@ -51,11 +51,15 @@
 # Admin panel
 https://agent.example.com:8443 {
     import panel
-    log { output file /var/log/caddy/remnawave-reseller-admin.log }
+    log {
+        output file /var/log/caddy/remnawave-reseller-admin.log
+    }
 }
 
 # Reseller panel
 https://agent.example.com:9443 {
     import panel
-    log { output file /var/log/caddy/remnawave-reseller-reseller.log }
+    log {
+        output file /var/log/caddy/remnawave-reseller-reseller.log
+    }
 }
